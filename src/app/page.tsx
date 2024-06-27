@@ -1,24 +1,21 @@
-import { getServerAuthSession} from "@/server/auth";
-import SignInButton from "./ui/auth/SignInButton";
-import SignOutButton from "./ui/auth/SignOutButton";
-function SignIn() {
+import { getServerAuthSession } from '@/server/auth';
+import SignInButton from './ui/auth/SignInButton';
+import SignOutButton from './ui/auth/SignOutButton';
 
-  
-  return (
-    <SignInButton />
-  );
+function SignIn() {
+	return (
+		<SignInButton />
+	);
 }
 
-
-
 export default async function Page() {
-  const session = await getServerAuthSession();
-  const user = session?.user?.email;
+	const session = await getServerAuthSession();
+	const email = session?.user?.email;
 
-  return (
-    <section>
-      <h1>Home</h1>
-      <div>{user ? <SignOutButton>{`Welcome ${user}`}</SignOutButton> : <SignIn />}</div>
-    </section>
-  );
+	return (
+		<section>
+			<h1>Home</h1>
+			<div>{email ? <> {email} <SignOutButton /></> : <SignIn />}</div>
+		</section>
+	);
 }
