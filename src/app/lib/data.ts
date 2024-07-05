@@ -8,7 +8,7 @@ const exerciseTemplate1: ExerciseTemplate = {
 	exercise_id: 1,
 	name: "Push-ups",
 	description: "A classic bodyweight exercise",
-	group: "Chest",
+	group: "Day 1",
 	series_max: 3,
 	series_min: 2,
 	repetition_max: 12,
@@ -20,11 +20,23 @@ const exerciseTemplate2: ExerciseTemplate = {
 	exercise_id: 2,
 	name: "Squats",
 	description: "A lower body compound exercise",
-	group: "Legs",
+	group: "Day 2",
 	series_max: 4,
 	series_min: 3,
 	repetition_max: 15,
 	repetition_min: 10,
+};
+
+const exerciseTemplate3: ExerciseTemplate = {
+	routine_id: 2,
+	exercise_id: 3,
+	name: "Shoulders",
+	description: "A shoulder exercise",
+	group: "Day 2",
+	series_max: 2,
+	series_min: 1,
+	repetition_max: 10,
+	repetition_min: 8,
 };
 
 
@@ -38,23 +50,57 @@ const routine1: Routine = {
 		{
 			id: 1,
 			template: exerciseTemplate1,
-			entries: [], // No entries yet
+			entries: [{
+				date: "2024-07-03T00:01:00.000Z", // Example entry from yesterday
+				weight: 20,
+				repetitions: 8,
+			}], // No entries yet
 		},
 		{
 			id: 2,
 			template: exerciseTemplate2,
 			entries: [{
-				date: "2024-07-03", // Example entry from yesterday
+				date: "2024-07-03T00:01:00.000Z", // Example entry from yesterday
 				weight: 20,
 				repetitions: 8,
 			}, {
-				date: "2024-07-03", // Example entry from yesterday
+				date: "2024-07-03T00:02:00.000Z", // Example entry from yesterday
 				weight: 20,
 				repetitions: 8,
 			}, {
-				date: "2024-07-03", // Example entry from yesterday
+				date: "2024-07-03T00:03:00.000Z", // Example entry from yesterday
 				weight: 20,
 				repetitions: 10,
+			}, {
+				date: "2024-07-04T00:03:00.000Z", // Example entry from yesterday
+				weight: 1,
+				repetitions: 1,
+			}, {
+				date: "2024-07-05T00:03:00.000Z", // Example entry from yesterday
+				weight: 5,
+				repetitions: 5,
+			}],
+		},
+		{
+			id: 3,
+			template: exerciseTemplate3,
+			entries: [{
+				date: "2024-07-03T00:01:00.000Z", // Example entry from yesterday
+				weight: 20,
+				repetitions: 8,
+			}, {
+				date: "2024-07-03T00:02:00.000Z", // Example entry from yesterday
+				weight: 20,
+				repetitions: 8,
+			}, {
+				date: "2024-07-04T00:03:00.000Z", // Example entry from yesterday
+				weight: 1,
+				repetitions: 1,
+			}
+			, {
+				date: "2024-07-04T00:04:00.000Z", // Example entry from yesterday
+				weight: 4,
+				repetitions: 4,
 			}],
 		},
 	],

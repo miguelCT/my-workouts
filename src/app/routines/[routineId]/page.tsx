@@ -17,12 +17,10 @@ export default async function Page({
 	const routineId = params?.routineId;
 
 	return (
-		<div>
-            Routine: {routineId}
-
+		<>
 			<Suspense fallback={<div>Loading...</div>} >
 				<RoutineInfo id={Number(routineId)} />
 			</Suspense>
-		</div>
+		</>
 	);
 }

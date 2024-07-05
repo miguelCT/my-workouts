@@ -1,5 +1,10 @@
 import '@/styles/globals.css';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { GeistSans } from 'geist/font/sans';
 
 export const metadata = {
@@ -16,8 +21,10 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={GeistSans.className}>
-				My workouts
-				{children}
+				<AppRouterCacheProvider>
+					My workouts
+					{children}
+				</AppRouterCacheProvider>
 			</body>
 		</html>
 	);
