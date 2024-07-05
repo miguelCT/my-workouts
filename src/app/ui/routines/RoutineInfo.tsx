@@ -1,6 +1,6 @@
 import { fetchRoutine } from '@/app/lib/data';
-import { type ExerciseEntry, type Exercise, type ExerciseTemplate } from '@/app/lib/definitions';
-import { formatDateToLocal, groupExercisesByEntryCreationDate, groupExercisesByGroupName } from '@/app/lib/utils';
+import { type ExerciseEntry, type ExerciseTemplate } from '@/app/lib/definitions';
+import { groupExercisesByEntryCreationDate } from '@/app/lib/utils';
 import {
 	Box,
 	Grid,
