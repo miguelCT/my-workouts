@@ -21,7 +21,7 @@ export function groupExercisesByGroupName(exercises: Tuple[]): TupleByGroup[] {
 }
 
 
-export function groupExercisesByEntryCreationDate(routine: Routine): [string, TupleByGroup[]][] {
+export function groupExercisesByEntryDate(routine: Routine): [date: string, TupleByGroup[]][] {
 	const groupedExercises = new Map<string, Map<ExerciseTemplate, ExerciseEntry[]>>();
 
 	// const m = new Map<ExerciseTemplate, ExerciseEntry[]>();
@@ -29,7 +29,7 @@ export function groupExercisesByEntryCreationDate(routine: Routine): [string, Tu
 	routine.exercises.forEach((exercise) => {
 		exercise.entries.forEach((entry) => {
 			const creationDate = new Date(entry.date);
-			const key = creationDate.toDateString(); // Group by date without time
+			const key = creationDate.toLocaleDateString(); // Group by date without time
 
 			if (groupedExercises.has(key)) {
 				const excerciseMap = groupedExercises.get(key);
@@ -50,10 +50,27 @@ export function groupExercisesByEntryCreationDate(routine: Routine): [string, Tu
 		});
 	});
 
-	return Array.from(groupedExercises.entries()).map(
+	return Array.from(groupedExercises.entries()).sort((a, b) => b[0].localeCompare(b[0]) - a[0].localeCompare(b[0])).map(
 		([date, exercises]) => 
 			[date, groupExercisesByGroupName(Array.from(exercises.entries()))]
 	);
 }
 
 
+
+
+export function groupExercisesByName(routine: Routine): [group: string, ExerciseTemplate[]][] {
+	const groupedExercises: [string, ExerciseTemplate[]][] = [];
+  
+	routine.exercises.forEach((exercise) => {
+		const groupName = exercise.template.group;
+		const group = groupedExercises.find(([name]) => name === groupName);
+		if (group) {
+			group[1].push(exercise.template);
+		} else {
+			groupedExercises.push([groupName, [exercise.template]]);
+		}
+	});
+  
+	return groupedExercises;
+}
