@@ -1,41 +1,56 @@
 /* eslint-disable import/prefer-default-export */
-import { notFound } from "next/navigation";
+import { db } from "@/server/db";
+import { exerciseEntries, exerciseTemplates, routines } from "@/server/db/schema";
+import { desc, eq } from "drizzle-orm";
+import groupBy from 'lodash.groupby';
 import { unstable_noStore as noStore } from 'next/cache';
-import { type ExerciseTemplate, type Routine } from "./definitions";
+import { notFound } from "next/navigation";
+import { type Exercise, type ExerciseTemplate, type Routine, type RoutineItem } from "./definitions";
+// import {routines as mockRoutines} from './mockData'
 
-import { routines } from './mockData';
 
-
-export async function fetchRoutine(routineId: number): Promise<Routine> {
+export async function fetchRoutine(routineId: string): Promise<Routine> {
 	noStore()
-	console.log('routines---------------------- GET', routines)
-	const routine = routines.get(routineId);
 
-	if(!routine) {
+	// const routine = mockRoutines.get(routineId);
+	const result = await db.select().from(routines)
+		.where(eq(routines.id, routineId))
+		.innerJoin(exerciseTemplates, eq(exerciseTemplates.routine_id, routines.id))
+		.innerJoin(exerciseEntries, eq(exerciseEntries.template_id, exerciseTemplates.id))
+		.orderBy(desc(exerciseEntries.createdAt));
+
+	if(!result) {
 		return notFound()
 	}
 
-	const delay = Math.floor(Math.random() * 1500);
+	const routineInfo = result?.[0]?.routine as unknown as Routine;
 
-	// eslint-disable-next-line no-promise-executor-return
-	await new Promise((resolve) => setTimeout(resolve, delay));
+	const groupedEntriesByTemplate  = groupBy(result, r => r.exercise_template.name);
+
+
+
+	const routine: Routine = {
+		...routineInfo,
+		exercises: Object.entries(groupedEntriesByTemplate).map(([, info]): Exercise => ({
+			entries: info?.map(r => r.exercise_entry).filter(_ => !!_) ?? [],
+			template: info[0]?.exercise_template as ExerciseTemplate
+		}))
+	}
+
+
+	
 	return routine;
 }
 
 
-export async function fetchRoutines() {
-	const delay = Math.floor(Math.random() * 1500);
-
+export async function fetchRoutines(): Promise<RoutineItem[]> {
 	try {
+		return await db.select({
+			id: routines.id,
+			name: routines.name,
+			createdAt: routines.createdAt,
+		  }).from(routines);
 
-		// eslint-disable-next-line no-promise-executor-return
-		await new Promise((resolve) => setTimeout(resolve, delay));
-		return [...routines.values()].map(r => ({
-			id: r.id,
-			name: r.name,
-			created: r.created,
-			updated: r.updated,
-		}));
 	} catch (error) {
 		console.error('Failed to fetch Routines', error);
 		throw new Error('Failed to fetch Routines.');

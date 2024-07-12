@@ -1,5 +1,6 @@
 import { relations, sql } from 'drizzle-orm';
 import {
+	date,
 	index,
 	integer,
 	pgTableCreator,
@@ -7,6 +8,7 @@ import {
 	serial,
 	text,
 	timestamp,
+	uuid,
 	varchar,
 } from 'drizzle-orm/pg-core';
 import { type AdapterAccount } from 'next-auth/adapters';
@@ -29,25 +31,6 @@ export const users = createTable('user', {
 	}).default(sql`CURRENT_TIMESTAMP`),
 	image: varchar('image', { length: 255 }),
 });
-
-export const posts = createTable(
-	'post',
-	{
-		id: serial('id').primaryKey(),
-		name: varchar('name', { length: 256 }),
-		createdById: varchar('createdById', { length: 255 })
-			.notNull()
-			.references(() => users.id),
-		createdAt: timestamp('created_at', { withTimezone: true })
-			.default(sql`CURRENT_TIMESTAMP`)
-			.notNull(),
-		updatedAt: timestamp('updatedAt', { withTimezone: true }),
-	},
-	(example) => ({
-		createdByIdIdx: index('createdById_idx').on(example.createdById),
-		nameIndex: index('name_idx').on(example.name),
-	}),
-);
 
 export const accounts = createTable(
 	'account',
@@ -121,3 +104,66 @@ export const verificationTokens = createTable(
 		compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
 	}),
 );
+
+export const routines = createTable(
+	'routine',
+	{
+		id: uuid('id').defaultRandom().notNull().primaryKey(),
+		name: varchar('name', { length: 256 }).notNull(),
+		createdAt: date("date")
+			.default(sql`CURRENT_TIMESTAMP`)
+			.notNull(),
+		updatedAt: timestamp('updatedAt', { withTimezone: true }),
+	},
+	(example) => ({
+		nameIndex: index('routine_name_idx').on(example.name),
+	}),
+);
+
+
+
+
+export const exerciseTemplates = createTable(
+	'exercise_template',
+	{
+		id: uuid('id').defaultRandom().notNull().primaryKey(),
+		routine_id: uuid('routine_id').references(() => routines.id),
+		name: varchar('name', { length: 256 }).notNull(),
+		description: text('description'),
+		group: varchar('group', { length: 256 }),
+		series_max: integer('series_max'),
+		series_min: integer('series_min').notNull(),
+		repetition_max: integer('repetition_max'),
+		repetition_min: integer('repetition_min').notNull(),
+		createdAt: date("date")
+			.default(sql`CURRENT_TIMESTAMP`)
+			.notNull(),
+		updatedAt: date('updatedAt'),
+	}
+);
+
+
+export const exerciseEntries = createTable(
+	'exercise_entry',
+	{
+		id: uuid('id').defaultRandom().notNull().primaryKey(),
+		template_id: uuid('template_id').references(() => exerciseTemplates.id),
+		weight: integer('weight').notNull(),
+		repetitions: integer('repetitions').notNull(),
+		createdAt: date("created_at")
+			.default(sql`CURRENT_TIMESTAMP`)
+			.notNull(),
+		updatedAt: timestamp('updated_at', { withTimezone: true }),
+	},
+);
+
+
+// export const exercises = createTable(
+// 	'exercise',
+// 	{
+// 		id: uuid('id').defaultRandom().notNull().primaryKey(),
+// 		routine_id: uuid('routine_id').references(() => routines.id),
+// 		template_id: uuid('template_id').references(() => exerciseTemplates.id).notNull(),
+// 		entry_id: uuid('entry_id').references(() => exerciseEntries.id).notNull()
+// 	},
+// );

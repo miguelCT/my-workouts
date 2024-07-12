@@ -1,8 +1,8 @@
 'use client';
 
 import { createDayInRoutine } from '@/app/lib/actions';
-import { type ExerciseTemplate } from '@/app/lib/definitions';
-import { formValues } from '@/app/lib/mockData';
+import { type Routine } from '@/app/lib/definitions';
+import { groupExercisesByEntryDate, groupExercisesByName } from '@/app/lib/utils';
 import {
 	Box,
 	Button,
@@ -10,19 +10,32 @@ import {
 	Typography
 } from '@mui/material';
 import { useParams } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import ExerciseEntryCard from './ExerciseEntryCard';
 
 type NewDayCardProps = {
-	groupedTemplates: [group: string, ExerciseTemplate[]][]
+	routine: Routine
 }
-export default function NewDayCard({ groupedTemplates }: NewDayCardProps) {
+export default function NewDayCard({ routine }: NewDayCardProps) {
+	const groupedTemplates = groupExercisesByName(routine);
+	// const groupedExercisesByDate = groupExercisesByEntryDate(routine);
+	// const hasEntriesToday = groupedExercisesByDate.find(g => g[0] === new Date().toDateString());
+
+
 	const { routineId } = useParams<{ routineId: string }>()
 	const [pending, startTransaction] = useTransition();
 	const submitAction = async () => {
 		startTransaction(async () => {
-			const r = await createDayInRoutine(routineId, formValues);
-			console.log('submitAction', r)
+
+			await createDayInRoutine(routineId, {
+				...routine,
+				exercises: routine.exercises.map((exercise) => ({
+					template: exercise.template,
+					entries: [{
+						repetitions: Math.floor(Math.random() * 10),
+						weight: Math.floor(Math.random() * 10),
+					}]}))
+			});
 		})
 	}
 	const selectedDate = new Date();
@@ -30,7 +43,7 @@ export default function NewDayCard({ groupedTemplates }: NewDayCardProps) {
 		<form action={
 			submitAction
 		}>
-			<Typography variant="subtitle1">{selectedDate.toLocaleDateString()} [today]</Typography>
+			<Typography variant="subtitle1">{selectedDate.toDateString()} [today]</Typography>
 			{groupedTemplates.map(([group, templates]) => (
 				<Box key={group} sx={{ m: 0.5, borderBottom: '1px dashed gray', pb: 1 }}>
 					{group}
@@ -38,7 +51,8 @@ export default function NewDayCard({ groupedTemplates }: NewDayCardProps) {
 					{
 						templates.map((template) => <ExerciseEntryCard key={template.name} 
 							entries={[...Array(template.series_max).keys()].map(() => ({
-								date: '',
+								id: '',
+								createdAt: '',
 								weight:  0,
 								repetitions: 0
 							}))} 

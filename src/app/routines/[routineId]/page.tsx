@@ -19,7 +19,7 @@ export default async function Page({
 	return (
 		<>
 			<Suspense fallback={<div>Loading...</div>} >
-				<RoutineInfo id={Number(routineId)} />
+				<RoutineInfo id={routineId} />
 			</Suspense>
 		</>
 	);

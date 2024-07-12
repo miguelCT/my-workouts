@@ -5,12 +5,14 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { infer, z } from 'zod';
+import { db } from '@/server/db';
+import { exerciseEntries } from '@/server/db/schema';
 import { routines } from './mockData';
 
 
 const ExerciseTemplateSchema = z.object({
-	routine_id: z.number(),
-	exercise_id: z.number(),
+	id: z.string(),
+	routine_id: z.string(),
 	name: z.string(),
 	description: z.string(),
 	group: z.string(),
@@ -21,21 +23,24 @@ const ExerciseTemplateSchema = z.object({
 });
 
 const ExerciseEntrySchema = z.object({
-	date: z.string(),
+	createdAt: z.string(),
 	weight: z.number(),
 	repetitions: z.number(),
 });
 
 
 const RoutineSchema = z.object({
-	id: z.string().or(z.number()),
+	id: z.string(),
 	name: z.string(),
-	created: z.string(),
+	createdAt: z.string(),
 	updated: z.string(),
 	exercises: z.array(z.object({
 	//   id: z.number(),
-	  template: ExerciseTemplateSchema.pick({ exercise_id: true, routine_id: true }),
-	  entries: z.array(ExerciseEntrySchema),
+	  template: ExerciseTemplateSchema.pick({ routine_id: true , id : true}),
+	  entries: z.array(ExerciseEntrySchema.pick({
+		  weight: true, 
+		  repetitions: true,
+	  })),
 	})),
 });
 
@@ -49,15 +54,6 @@ export async function createDayInRoutine(routineId: string, formData: CreateRout
 		await new Promise((resolve) => {setTimeout(resolve, 2000)});
 		const validatedFields = CreateRoutineEntry.safeParse(formData);
 
-		const r = routines.get(Number(routineId));
-
-		if(r) {
-			const s = [...formData.exercises, ...r.exercises];
-			// @ts-expect-error: forced error
-			routines.set(Number(routineId), { ...r, exercises: s });
-
-			console.log('routines', routines)
-		}
 
 		// If form validation fails, return errors early. Otherwise, continue.
 		if (!validatedFields.success) {
@@ -68,12 +64,18 @@ export async function createDayInRoutine(routineId: string, formData: CreateRout
 		}
 
 		// Prepare data for insertion into the database
+		const newEntries = validatedFields.data.exercises.flatMap(({ template, entries }) => (entries.map(e => ({
+			template_id: template.id,
+			...e,
+		}))));
 
-		console.log('SQL', validatedFields.data);
+
+		const result = await db.insert(exerciseEntries).values(newEntries)
+			
 
 		revalidatePath(`/routines/${routineId}`);
 
-		return validatedFields.data;
+		return result;
 	} catch (error) {
 		console.error(error);
 		return {

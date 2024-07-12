@@ -1,6 +1,4 @@
-import { fetchRoutine } from '@/app/lib/data';
 import { type ExerciseEntry, type ExerciseTemplate } from '@/app/lib/definitions';
-import { groupExercisesByEntryDate, groupExercisesByName } from '@/app/lib/utils';
 import {
 	Box,
 	Grid,
@@ -29,7 +27,7 @@ export default function ExerciseEntryCard({ entries, template, readOnly }: Exerc
 				</Grid>
 			</Grid>
 			{entries.map((entry, index) => (
-				<Grid container spacing={0.5} key={entry.date || index}>
+				<Grid container spacing={0.5} key={entry.createdAt || index}>
 					<Grid item xs={6}>
 						<TextField margin="none" size='small' fullWidth defaultValue={entry.weight} 
 							error={!entry.weight && index < template.series_min} 

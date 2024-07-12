@@ -1,7 +1,7 @@
 // Exercise Template Type
 export type ExerciseTemplate = {
-  	routine_id: number;
-  	exercise_id: number;
+  	routine_id: string;
+  	id: string;
   	name: string;
   	description: string;
   	group: string;
@@ -10,26 +10,30 @@ export type ExerciseTemplate = {
   	repetition_max: number;
   	repetition_min: number;
 };
+
+
   
 // Routine Type
 export type Routine = {
-  	id: number;
+  	id: string;
   	name: string;
-  	created: string;  // ISO date format: YYYY-MM-DD
-  	updated: string;  // ISO date format: YYYY-MM-DD
+  	createdAt: string;  // ISO date format: YYYY-MM-DD
+  	updatedAt: string;  // ISO date format: YYYY-MM-DD
   	exercises: Exercise[];
 };
+
+export type RoutineItem = Pick<Routine, 'id' | 'name' | 'createdAt'>
   
 // Exercise Type
 export type Exercise = {
-  	id: number;
   	template: ExerciseTemplate;
   	entries: ExerciseEntry[];
 };
   
 // Exercise Entry Type
 export type ExerciseEntry = {
-  	date: string;  // ISO date format: YYYY-MM-DD
+	id: string;
+  	createdAt: string;  // ISO date format: YYYY-MM-DD
   	weight: number;
   	repetitions: number;
 };

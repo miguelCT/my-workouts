@@ -27,30 +27,37 @@ export function groupExercisesByEntryDate(routine: Routine): [date: string, Tupl
 	// const m = new Map<ExerciseTemplate, ExerciseEntry[]>();
 
 	routine.exercises.forEach((exercise) => {
-		exercise.entries.forEach((entry) => {
-			const creationDate = new Date(entry.date);
-			const key = creationDate.toLocaleDateString(); // Group by date without time
 
+		console.log('-------routine', routine)
+		console.log('-------exercise.group', exercise.template.group)
+		console.log('-------exercise.entries', exercise.entries)
+
+		// if(exercise?.entries.length === 0) {
+		// 	groupedExercises.set(key, new Map<ExerciseTemplate, ExerciseEntry[]>([[exercise.template, [entry]]]));
+
+		// }
+		exercise.entries.forEach((entry) => {
+			const creationDate = new Date(entry.createdAt);
+			const key = creationDate.toDateString(); // Group by date without time
+			
 			if (groupedExercises.has(key)) {
 				const excerciseMap = groupedExercises.get(key);
 				const hasExercise = excerciseMap?.has(exercise.template) ?? false;
 
 				if(hasExercise)  {
 					const oldEntries = excerciseMap?.get(exercise.template) ?? [];
-				    const newEntries = [...oldEntries, entry].filter(e => new Date(e.date).toDateString() === key);
+				    const newEntries = [...oldEntries, entry].filter(e => new Date(e.createdAt).toDateString() === key);
 					excerciseMap?.set(exercise.template, newEntries)
 				} else {
 					excerciseMap?.set(exercise.template, [entry])
 				}
 			} else {
-				const m = new Map<ExerciseTemplate, ExerciseEntry[]>();
-				m.set(exercise.template, [entry])
-				groupedExercises.set(key, m);
+				groupedExercises.set(key, new Map<ExerciseTemplate, ExerciseEntry[]>([[exercise.template, [entry]]]));
 			}
 		});
 	});
 
-	return Array.from(groupedExercises.entries()).sort((a, b) => b[0].localeCompare(b[0]) - a[0].localeCompare(b[0])).map(
+	return Array.from(groupedExercises.entries()).map(
 		([date, exercises]) => 
 			[date, groupExercisesByGroupName(Array.from(exercises.entries()))]
 	);
