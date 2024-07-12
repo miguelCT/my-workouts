@@ -5,6 +5,7 @@ import {
 	Box,
 	Button,
 	Grid,
+	LinearProgress,
 	Typography
 } from '@mui/material';
 import { useState, useTransition } from 'react';
@@ -25,7 +26,7 @@ export default function RoutineGroupCard({date, groupedExercises}: RoutineGroupC
 
 	const submitAction = async () => {
 		startTransaction(async () => {
-			const r = await Promise.resolve();
+			const r = await new Promise(resolve => {setTimeout(resolve, 2000)});
 
 			const s: CreateRoutineEntryType = {
 				id: routineId,
@@ -36,6 +37,7 @@ export default function RoutineGroupCard({date, groupedExercises}: RoutineGroupC
 		})
 	}
 	return <Grid item xs={6} md key={new Date(date).toISOString()} sx={{ border: 1 }}>
+		{pending && <LinearProgress />}
 		<form action={submitAction}>
 			<Typography variant="subtitle1">{new Date(date).toDateString()}</Typography>
 			{groupedExercises.map(([group, tuples]) => (

@@ -2,11 +2,12 @@
 
 import { createDayInRoutine } from '@/app/lib/actions';
 import { type Routine } from '@/app/lib/definitions';
-import { groupExercisesByEntryDate, groupExercisesByName } from '@/app/lib/utils';
+import { groupExercisesByName } from '@/app/lib/utils';
 import {
 	Box,
 	Button,
 	Grid,
+	LinearProgress,
 	Typography
 } from '@mui/material';
 import { useParams } from 'next/navigation';
@@ -18,8 +19,6 @@ type NewDayCardProps = {
 }
 export default function NewDayCard({ routine }: NewDayCardProps) {
 	const groupedTemplates = groupExercisesByName(routine);
-	// const groupedExercisesByDate = groupExercisesByEntryDate(routine);
-	// const hasEntriesToday = groupedExercisesByDate.find(g => g[0] === new Date().toDateString());
 
 
 	const { routineId } = useParams<{ routineId: string }>()
@@ -40,6 +39,7 @@ export default function NewDayCard({ routine }: NewDayCardProps) {
 	}
 	const selectedDate = new Date();
 	return <Grid item xs={6} md key={selectedDate.toISOString()} sx={{ border: 1, borderStyle: 'dashed', backgroundColor: t => t.palette.grey[100] }}>
+		{pending && <LinearProgress />}
 		<form action={
 			submitAction
 		}>

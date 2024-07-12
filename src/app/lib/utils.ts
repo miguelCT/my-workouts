@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { type Routine, type Exercise, type ExerciseEntry, type ExerciseTemplate } from "./definitions";
+import { type ExerciseEntry, type ExerciseTemplate, type Routine } from "./definitions";
 
 
 type Tuple = [ExerciseTemplate, ExerciseEntry[]];

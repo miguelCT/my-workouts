@@ -2,12 +2,10 @@
 
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { infer, z } from 'zod';
 import { db } from '@/server/db';
 import { exerciseEntries } from '@/server/db/schema';
-import { routines } from './mockData';
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 
 
 const ExerciseTemplateSchema = z.object({
