@@ -47,8 +47,7 @@ export default function NewDayCard({ routine }: NewDayCardProps) {
 			{groupedTemplates.map(([group, templates]) => (
 				<Box key={group} sx={{ m: 0.5, borderBottom: '1px dashed gray', pb: 1 }}>
 					{group}
-					{/* {tuples.map(([template, exercises]) => <ExerciseEntryCard key={template.name} entries={exercises} template={template}/>)} */}
-					{
+					{/* {
 						templates.map((template) => <ExerciseEntryCard key={template.name} 
 							entries={[...Array(template.series_min).keys()].map(() => ({
 								id: '',
@@ -57,7 +56,7 @@ export default function NewDayCard({ routine }: NewDayCardProps) {
 								repetitions: 0
 							}))} 
 							template={template} />)
-					}
+					} */}
 				</Box>
 			))}
 			<Button type='submit' disabled={pending}>Start day</Button> 

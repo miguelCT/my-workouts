@@ -6,48 +6,17 @@ import { db } from '@/server/db';
 import { exerciseEntries } from '@/server/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { z } from 'zod';
+import { type z } from 'zod';
+import { CreateRoutineEntrySchema, UpdateRoutineSchema } from './formSchemas';
 
 
-const ExerciseTemplateSchema = z.object({
-	id: z.string(),
-	routine_id: z.string(),
-	name: z.string(),
-	description: z.string(),
-	group: z.string(),
-	series_max: z.number(),
-	series_min: z.number(),
-	repetition_max: z.number(),
-	repetition_min: z.number(),
-});
 
-const ExerciseEntrySchema = z.object({
-	id: z.string(),
-	createdAt: z.string(),
-	weight: z.number(),
-	repetitions: z.number(),
-});
-
-
-const CreateRoutineEntry = z.object({
-	id: z.string(),
-	exercises: z.array(z.object({
-	//   id: z.number(),
-	  template: ExerciseTemplateSchema.pick({ routine_id: true , id : true}),
-	  entries: z.array(ExerciseEntrySchema.pick({
-		  weight: true, 
-		  repetitions: true,
-	  })),
-	})),
-});
-
-
-export type CreateRoutineEntryType = z.infer<typeof CreateRoutineEntry>;
+export type CreateRoutineEntryType = z.infer<typeof CreateRoutineEntrySchema>;
 
 
 export async function createDayInRoutine(routineId: string, formData: CreateRoutineEntryType) {
 	try {
-		const validatedFields = CreateRoutineEntry.safeParse(formData);
+		const validatedFields = CreateRoutineEntrySchema.safeParse(formData);
 
 
 		// If form validation fails, return errors early. Otherwise, continue.
@@ -78,30 +47,25 @@ export async function createDayInRoutine(routineId: string, formData: CreateRout
 	}
 }
 	
-const UpdateRoutineSchema = z.object({
-	id: z.string(),
-	exercises: z.array(z.object({
-	//   id: z.number(),
-	  template: ExerciseTemplateSchema.pick({ routine_id: true , id : true}),
-	  entries: z.array(ExerciseEntrySchema),
-	})),
-});
+
 
 
 export type UpdateRoutineEntryType = z.infer<typeof UpdateRoutineSchema>;
 export async function updateDayInRoutine(routineId: string, formData: UpdateRoutineEntryType) {
 	try {
 		await new Promise((resolve) => {setTimeout(resolve, 2000)});
+
 		const validatedFields = UpdateRoutineSchema.safeParse(formData);
-
-
 		// If form validation fails, return errors early. Otherwise, continue.
 		if (!validatedFields.success) {
+			console.error(validatedFields.error.flatten().fieldErrors)
 			return {
 				errors: validatedFields.error.flatten().fieldErrors,
 				message: 'Missing Fields. Failed to Create Day.',
 			};
 		}
+
+		console.log(JSON.stringify(validatedFields.data, null, 4))
 
 		// Prepare data for insertion into the database
 		const newEntries = validatedFields.data.exercises.flatMap(({ template, entries }) => (entries.map(e => ({

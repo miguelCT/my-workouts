@@ -1,74 +1,78 @@
 'use client';
 
-import { updateDayInRoutine } from '@/app/lib/actions';
-import { type ExerciseEntry, type ExerciseTemplate } from '@/app/lib/definitions';
+import { updateDayInRoutine, type UpdateRoutineEntryType } from '@/app/lib/actions';
+import { type Exercise, type ExerciseEntry, type ExerciseTemplate, type Routine } from '@/app/lib/definitions';
 import {
-	Box,
 	Button,
 	Grid,
 	LinearProgress,
 	Typography
 } from '@mui/material';
 import { useParams } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form-mui';
+
+import { UpdateRoutineSchema } from '@/app/lib/formSchemas';
+import { zodResolver } from '@hookform/resolvers/zod';
 import ExerciseEntryCard from './ExerciseEntryCard';
 
-
+function filterEntriesByDate(exercise: Exercise, date: string): ExerciseEntry[] {
+	return exercise.entries.filter(entry => new Date(entry.createdAt).toDateString() === date);
+}
 
 type RoutineGroupCardProps = {
 	date: string,
-	groupedExercises: [group: string, [ExerciseTemplate, ExerciseEntry[]][]][]
+	groupedExercises: [group: string, [ExerciseTemplate, ExerciseEntry[]][]][],
+	routineInfo: Routine
 }
-export default function RoutineGroupCard({date, groupedExercises}: RoutineGroupCardProps) {
+
+
+export default function RoutineGroupCard({date, groupedExercises, routineInfo}: RoutineGroupCardProps) {
 	const { routineId } = useParams<{ routineId: string }>()
-	const [pending, startTransaction] = useTransition();
 	const [isEditionEnabled, setIsEditionEnabled] = useState(false);
 
-	const submitAction = async () => {
-		startTransaction(async () => {
-			await updateDayInRoutine(routineId, {
-				id: routineId,
-				exercises: groupedExercises
-					.map(([, tuples]) => tuples)
-					.flatMap((tuples) => tuples.map(([template, entries]) => ({
-						template,
-						// TODO improve date equiality
-						entries: entries?.filter(e => new Date(e.createdAt).toDateString()  === new Date(date).toDateString()).map(e => ({
-							...e,
-							repetitions: Math.floor(Math.random() * 10),
-							weight: Math.floor(Math.random() * 10),
-						}))
-				
-					})))
-			});
-			setIsEditionEnabled(false);
-		})
-	}
+	const methods = useForm<UpdateRoutineEntryType>({
+		defaultValues: {
+		  id: routineId,
+		  exercises: routineInfo.exercises.map(ex => ({
+				...ex,
+				entries: filterEntriesByDate(ex, date)
+		  }))
+		},
+		resolver: zodResolver(UpdateRoutineSchema),
+	  })
+
+	const { handleSubmit, formState } = methods;
+
+	const submitAction = handleSubmit(async (data) => {
+
+		await updateDayInRoutine(routineId, data);
+
+		setIsEditionEnabled(false);
+	});
+
 	return <Grid item xs={6} md key={new Date(date).toISOString()} sx={{ border: 1 }}>
-		{pending && <LinearProgress />}
-		<form action={submitAction}>
-			<Typography variant="subtitle1">{new Date(date).toDateString()}</Typography>
-			{groupedExercises.map(([group, tuples]) => (
-				<Box key={group} sx={{ m: 0.5, borderBottom: '1px dashed gray', pb: 1 }}>
-					{group}
-					{/* {tuples.map(([template, exercises]) => <ExerciseEntryCard key={template.name} entries={exercises} template={template}/>)} */}
-					{tuples.map(([template, exercises]) => <ExerciseEntryCard key={template.name} entries={[...Array(template.series_min).keys()].map((i) => ({
-						id: '',
-						createdAt: '',
-						weight: exercises[i]?.weight ?? 0,
-						repetitions: exercises[i]?.repetitions ?? 0
-					}))} template={template}  readOnly={!isEditionEnabled}/>)}
-				</Box>
-			
-			))}
-			{!isEditionEnabled ? <Button onClick={() => setIsEditionEnabled(true)}>Edit</Button>  : 
-				<div>
-					<Button onClick={() => setIsEditionEnabled(false)}>Cancel</Button>
-					<Button type='submit' disabled={pending}>Update</Button> 
-				</div>
-			}
+		{formState.isSubmitting && <LinearProgress />}
+		<FormProvider {...methods}>
+			<form onSubmit={submitAction} no-validate="true">
+				<Typography variant="subtitle1">{new Date(date).toDateString()}</Typography>
+				{	
+					routineInfo.exercises.map((exercise, index) => <ExerciseEntryCard 
+						key={exercise.template.id}  
+						exerciseIndex={index} 
+						entries={filterEntriesByDate(exercise, date)} 
+						template={exercise.template} 
+						readOnly={!isEditionEnabled}/>)
+				}
+				{!isEditionEnabled ? <Button onClick={() => setIsEditionEnabled(true)}>Edit</Button>  : 
+					<div>
+						<Button onClick={() => setIsEditionEnabled(false)}>Cancel</Button>
+						<Button type='submit' disabled={formState.isSubmitting}>Update</Button> 
+					</div>
+				}
 			
 
-		</form>
+			</form>
+		</FormProvider>
 	</Grid>;
 }
