@@ -1,5 +1,6 @@
 'use client';
 
+import { updateDayInRoutine } from '@/app/lib/actions';
 import { type ExerciseEntry, type ExerciseTemplate } from '@/app/lib/definitions';
 import {
 	Box,
@@ -8,9 +9,8 @@ import {
 	LinearProgress,
 	Typography
 } from '@mui/material';
-import { useState, useTransition } from 'react';
 import { useParams } from 'next/navigation';
-import { type CreateRoutineEntryType } from '@/app/lib/actions';
+import { useState, useTransition } from 'react';
 import ExerciseEntryCard from './ExerciseEntryCard';
 
 
@@ -26,13 +26,21 @@ export default function RoutineGroupCard({date, groupedExercises}: RoutineGroupC
 
 	const submitAction = async () => {
 		startTransaction(async () => {
-			const r = await new Promise(resolve => {setTimeout(resolve, 2000)});
-
-			const s: CreateRoutineEntryType = {
+			await updateDayInRoutine(routineId, {
 				id: routineId,
-				exercises: groupedExercises.flatMap(([group, tuples]) => tuples.map(([template, entries]) => ({entries, template})))
-			}
-			console.log('update',s)
+				exercises: groupedExercises
+					.map(([, tuples]) => tuples)
+					.flatMap((tuples) => tuples.map(([template, entries]) => ({
+						template,
+						// TODO improve date equiality
+						entries: entries?.filter(e => new Date(e.createdAt).toDateString()  === new Date(date).toDateString()).map(e => ({
+							...e,
+							repetitions: Math.floor(Math.random() * 10),
+							weight: Math.floor(Math.random() * 10),
+						}))
+				
+					})))
+			});
 			setIsEditionEnabled(false);
 		})
 	}
@@ -44,7 +52,7 @@ export default function RoutineGroupCard({date, groupedExercises}: RoutineGroupC
 				<Box key={group} sx={{ m: 0.5, borderBottom: '1px dashed gray', pb: 1 }}>
 					{group}
 					{/* {tuples.map(([template, exercises]) => <ExerciseEntryCard key={template.name} entries={exercises} template={template}/>)} */}
-					{tuples.map(([template, exercises]) => <ExerciseEntryCard key={template.name} entries={[...Array(template.series_max).keys()].map((i) => ({
+					{tuples.map(([template, exercises]) => <ExerciseEntryCard key={template.name} entries={[...Array(template.series_min).keys()].map((i) => ({
 						id: '',
 						createdAt: '',
 						weight: exercises[i]?.weight ?? 0,

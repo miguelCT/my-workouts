@@ -50,7 +50,7 @@ export default function NewDayCard({ routine }: NewDayCardProps) {
 					{/* {tuples.map(([template, exercises]) => <ExerciseEntryCard key={template.name} entries={exercises} template={template}/>)} */}
 					{
 						templates.map((template) => <ExerciseEntryCard key={template.name} 
-							entries={[...Array(template.series_max).keys()].map(() => ({
+							entries={[...Array(template.series_min).keys()].map(() => ({
 								id: '',
 								createdAt: '',
 								weight:  0,

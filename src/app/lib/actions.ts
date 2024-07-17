@@ -4,6 +4,7 @@
 
 import { db } from '@/server/db';
 import { exerciseEntries } from '@/server/db/schema';
+import { and, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
@@ -21,17 +22,15 @@ const ExerciseTemplateSchema = z.object({
 });
 
 const ExerciseEntrySchema = z.object({
+	id: z.string(),
 	createdAt: z.string(),
 	weight: z.number(),
 	repetitions: z.number(),
 });
 
 
-const RoutineSchema = z.object({
+const CreateRoutineEntry = z.object({
 	id: z.string(),
-	name: z.string(),
-	createdAt: z.string(),
-	updated: z.string(),
 	exercises: z.array(z.object({
 	//   id: z.number(),
 	  template: ExerciseTemplateSchema.pick({ routine_id: true , id : true}),
@@ -43,13 +42,11 @@ const RoutineSchema = z.object({
 });
 
 
-const CreateRoutineEntry = RoutineSchema.pick({ id: true, exercises: true });
 export type CreateRoutineEntryType = z.infer<typeof CreateRoutineEntry>;
 
 
 export async function createDayInRoutine(routineId: string, formData: CreateRoutineEntryType) {
 	try {
-		await new Promise((resolve) => {setTimeout(resolve, 2000)});
 		const validatedFields = CreateRoutineEntry.safeParse(formData);
 
 
@@ -67,13 +64,61 @@ export async function createDayInRoutine(routineId: string, formData: CreateRout
 			...e,
 		}))));
 
-
 		const result = await db.insert(exerciseEntries).values(newEntries)
 			
 
 		revalidatePath(`/routines/${routineId}`);
 
 		return result;
+	} catch (error) {
+		console.error(error);
+		return {
+			message: 'Database Error: Failed to Create Invoice.',
+		};
+	}
+}
+	
+const UpdateRoutineSchema = z.object({
+	id: z.string(),
+	exercises: z.array(z.object({
+	//   id: z.number(),
+	  template: ExerciseTemplateSchema.pick({ routine_id: true , id : true}),
+	  entries: z.array(ExerciseEntrySchema),
+	})),
+});
+
+
+export type UpdateRoutineEntryType = z.infer<typeof UpdateRoutineSchema>;
+export async function updateDayInRoutine(routineId: string, formData: UpdateRoutineEntryType) {
+	try {
+		await new Promise((resolve) => {setTimeout(resolve, 2000)});
+		const validatedFields = UpdateRoutineSchema.safeParse(formData);
+
+
+		// If form validation fails, return errors early. Otherwise, continue.
+		if (!validatedFields.success) {
+			return {
+				errors: validatedFields.error.flatten().fieldErrors,
+				message: 'Missing Fields. Failed to Create Day.',
+			};
+		}
+
+		// Prepare data for insertion into the database
+		const newEntries = validatedFields.data.exercises.flatMap(({ template, entries }) => (entries.map(e => ({
+			template_id: template.id,
+			...e,
+		}))));
+
+
+		// console.log('newEntries', newEntries)
+		const promises  = newEntries.map(e => db.update(exerciseEntries).set(e).where(and(eq(exerciseEntries.id, e.id), eq(exerciseEntries.template_id, e.template_id))));
+		await Promise.all(promises);
+		console.log('promises', promises.length)
+		// const result = await db.update(exerciseEntries).set(newEntries).where(eq(exerciseEntries.id, 'Dan'))
+			
+
+		revalidatePath(`/routines/${routineId}`);
+		return {};
 	} catch (error) {
 		console.error(error);
 		return {

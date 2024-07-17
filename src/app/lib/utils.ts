@@ -28,10 +28,6 @@ export function groupExercisesByEntryDate(routine: Routine): [date: string, Tupl
 
 	routine.exercises.forEach((exercise) => {
 
-		console.log('-------routine', routine)
-		console.log('-------exercise.group', exercise.template.group)
-		console.log('-------exercise.entries', exercise.entries)
-
 		// if(exercise?.entries.length === 0) {
 		// 	groupedExercises.set(key, new Map<ExerciseTemplate, ExerciseEntry[]>([[exercise.template, [entry]]]));
 

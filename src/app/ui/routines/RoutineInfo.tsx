@@ -1,17 +1,11 @@
 import { fetchRoutine } from '@/app/lib/data';
-import { type ExerciseEntry, type ExerciseTemplate } from '@/app/lib/definitions';
-import { groupExercisesByEntryDate, groupExercisesByName } from '@/app/lib/utils';
+import { groupExercisesByEntryDate } from '@/app/lib/utils';
 import {
-	Box,
-	Button,
 	Grid,
-	TextField,
 	Typography
 } from '@mui/material';
-import ExerciseEntryCard from './ExerciseEntryCard';
 import NewDayCard from './NewDayCard';
 import RoutineGroupCard from './RoutineGroupCard';
-
 
 export default async function RoutineInfo({ id } : { id: string }) {
 
