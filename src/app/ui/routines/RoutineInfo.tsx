@@ -20,7 +20,7 @@ export default async function RoutineInfo({ id } : { id: string }) {
 	return (
 		<>
 			<Typography variant="h5" color="primary" sx={{
-				my: 1
+				my: 1,
 			}}>
 				Routines - {name}
 			</Typography>

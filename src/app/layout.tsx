@@ -28,10 +28,10 @@ export default function RootLayout({
 					<CssBaseline enableColorScheme />
 
 					<AppRouterCacheProvider>
-						<AppBar />
-						<Container sx={{ py: 2 }}>
+						<Container sx={{ py: 2, pb: '66px' }}>
 							{children}
 						</Container>
+						<AppBar />
 					</AppRouterCacheProvider>
 				</ThemeProvider>
 			</body>

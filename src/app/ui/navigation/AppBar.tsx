@@ -10,7 +10,7 @@ import AppBackNavigation from './AppBackNavigation';
 export default function AppBar() {
 	return (
 		<Box sx={{ flexGrow: 1 }}>
-			<MuiAppBar position="static" elevation={0}>
+			<MuiAppBar elevation={0} position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
 				<Toolbar>
 					<IconButton LinkComponent={Link} href="/routines"
 						size="large"
@@ -23,7 +23,6 @@ export default function AppBar() {
 					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         My workouts
 					</Typography>
-
 					<AppBackNavigation />
 				</Toolbar>
 			</MuiAppBar>

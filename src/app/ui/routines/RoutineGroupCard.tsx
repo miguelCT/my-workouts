@@ -9,6 +9,7 @@ import {
 	CardActions,
 	CardContent,
 	Grid,
+	IconButton,
 	LinearProgress,
 	Typography
 } from '@mui/material';
@@ -18,6 +19,7 @@ import { FormProvider, useForm } from 'react-hook-form-mui';
 
 import { UpdateRoutineSchema } from '@/app/lib/formSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import EditIcon from '@mui/icons-material/Edit';
 import ExerciseEntryCard from './ExerciseEntryCard';
 
 function filterEntriesByDate(exercise: Exercise, date: string): ExerciseEntry[] {
@@ -80,12 +82,14 @@ export default function RoutineGroupCard({date, groupedExercises, routineInfo}: 
 						
 					</CardContent>
 					 {formState.isSubmitting && <LinearProgress />}
-					<CardActions>
-						{!isEditionEnabled ? <Button onClick={() => setIsEditionEnabled(true)}>Edit</Button>  : 
-							<div>
+					<CardActions sx={{
+						justifyContent: 'flex-end',
+					}}>
+						{!isEditionEnabled ? <IconButton color="primary" onClick={() => setIsEditionEnabled(true)}><EditIcon /></IconButton>  : 
+							<>
 								<Button onClick={() => setIsEditionEnabled(false)}>Cancel</Button>
-								<Button type='submit' disabled={formState.isSubmitting}>Update</Button> 
-							</div>
+								<Button type='submit' variant="outlined" disabled={formState.isSubmitting}>Update</Button> 
+							</>
 						}
 					</CardActions>
 				</Card>
