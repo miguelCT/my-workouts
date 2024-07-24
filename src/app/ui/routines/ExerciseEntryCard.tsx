@@ -31,7 +31,7 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 				</Grid>
 			</Grid>
 			{entries.map((entry, index) => (
-				<Grid container spacing={0.5} key={entry.id}>
+				<Grid container spacing={0.5} key={entry.id || index}>
 					<Grid item xs={6}>
 						 <TextFieldElement
 							name={`exercises.${exerciseIndex}.entries.${index}.weight`}
@@ -47,7 +47,6 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 								backgroundColor: readOnly ? 'transparent' : 'background.paper',
 							}}
 							control={control}
-							required
 						/>
 					</Grid>
 					<Grid item xs={6}>
@@ -65,7 +64,6 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 								backgroundColor: readOnly ? 'transparent' : 'white',
 							}}
 							control={control}
-							required
 						/>
 					</Grid>
 				</Grid>

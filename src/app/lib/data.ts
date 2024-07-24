@@ -12,11 +12,10 @@ import { type Exercise, type ExerciseTemplate, type Routine, type RoutineItem } 
 export async function fetchRoutine(routineId: string): Promise<Routine> {
 	noStore()
 
-	// const routine = mockRoutines.get(routineId);
 	const result = await db.select().from(routines)
 		.where(eq(routines.id, routineId))
 		.innerJoin(exerciseTemplates, eq(exerciseTemplates.routine_id, routines.id))
-		.innerJoin(exerciseEntries, eq(exerciseEntries.template_id, exerciseTemplates.id))
+		.fullJoin(exerciseEntries, eq(exerciseEntries.template_id, exerciseTemplates.id))
 		.orderBy(desc(exerciseEntries.createdAt));
 
 	if(!result) {
@@ -25,7 +24,8 @@ export async function fetchRoutine(routineId: string): Promise<Routine> {
 
 	const routineInfo = result?.[0]?.routine as unknown as Routine;
 
-	const groupedEntriesByTemplate  = groupBy(result, r => r.exercise_template.name);
+
+	const groupedEntriesByTemplate  = groupBy(result, r => r.exercise_template?.name);
 
 
 

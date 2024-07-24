@@ -25,9 +25,9 @@ export default async function RoutineInfo({ id } : { id: string }) {
 				Routines - {name}
 			</Typography>
 			<Grid container spacing={1}>
-				{/* {!hasEntriesToday && <NewDayCard routine={routineInfo}/>} */}
-				{groupedExercisesByDate.map(([date, groupedExercises]) => (
-					<RoutineGroupCard date={date} groupedExercises={groupedExercises} routineInfo={routineInfo} key={date} />
+				{!hasEntriesToday && <RoutineGroupCard date={new Date().toDateString()} routineInfo={routineInfo} empty />}
+				{groupedExercisesByDate.map(([date]) => (
+					<RoutineGroupCard date={date} routineInfo={routineInfo} key={date} />
 				))}
 
 				

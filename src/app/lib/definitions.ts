@@ -1,3 +1,5 @@
+import { type z } from 'zod';
+import { type ExerciseEntrySchema } from './formSchemas';
 // Exercise Template Type
 export type ExerciseTemplate = {
   	routine_id: string;
@@ -31,10 +33,5 @@ export type Exercise = {
 };
   
 // Exercise Entry Type
-export type ExerciseEntry = {
-	id: string;
-  	createdAt: string;  // ISO date format: YYYY-MM-DD
-  	weight: number;
-  	repetitions: number;
-};
+export type ExerciseEntry = z.infer<typeof ExerciseEntrySchema>;
   

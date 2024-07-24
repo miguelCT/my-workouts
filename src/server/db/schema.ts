@@ -148,8 +148,8 @@ export const exerciseEntries = createTable(
 	{
 		id: uuid('id').defaultRandom().notNull().primaryKey(),
 		template_id: uuid('template_id').references(() => exerciseTemplates.id),
-		weight: integer('weight').notNull(),
-		repetitions: integer('repetitions').notNull(),
+		weight: integer('weight'),
+		repetitions: integer('repetitions'),
 		createdAt: date("created_at")
 			.default(sql`CURRENT_TIMESTAMP`)
 			.notNull(),

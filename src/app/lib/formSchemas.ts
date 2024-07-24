@@ -17,8 +17,8 @@ export const ExerciseTemplateSchema = z.object({
 export const ExerciseEntrySchema = z.object({
 	id: z.string(),
 	createdAt: z.string(),
-	weight: z.coerce.number().int().positive(),
-	repetitions: z.coerce.number().int().positive(),
+	weight: z.nullable(z.coerce.number().int().positive()),
+	repetitions: z.nullable(z.coerce.number().int().positive()),
 });
 
 
