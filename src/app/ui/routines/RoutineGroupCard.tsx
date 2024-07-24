@@ -3,7 +3,11 @@
 import { updateDayInRoutine, type UpdateRoutineEntryType } from '@/app/lib/actions';
 import { type Exercise, type ExerciseEntry, type ExerciseTemplate, type Routine } from '@/app/lib/definitions';
 import {
+	Box,
 	Button,
+	Card,
+	CardActions,
+	CardContent,
 	Grid,
 	LinearProgress,
 	Typography
@@ -51,26 +55,40 @@ export default function RoutineGroupCard({date, groupedExercises, routineInfo}: 
 		setIsEditionEnabled(false);
 	});
 
-	return <Grid item xs={6} md key={new Date(date).toISOString()} sx={{ border: 1 }}>
-		{formState.isSubmitting && <LinearProgress />}
+	return <Grid item xs={6} md key={date} >
+		
 		<FormProvider {...methods}>
 			<form onSubmit={submitAction} no-validate="true">
-				<Typography variant="subtitle1">{new Date(date).toDateString()}</Typography>
-				{	
-					routineInfo.exercises.map((exercise, index) => <ExerciseEntryCard 
-						key={exercise.template.id}  
-						exerciseIndex={index} 
-						entries={filterEntriesByDate(exercise, date)} 
-						template={exercise.template} 
-						readOnly={!isEditionEnabled}/>)
-				}
-				{!isEditionEnabled ? <Button onClick={() => setIsEditionEnabled(true)}>Edit</Button>  : 
-					<div>
-						<Button onClick={() => setIsEditionEnabled(false)}>Cancel</Button>
-						<Button type='submit' disabled={formState.isSubmitting}>Update</Button> 
-					</div>
-				}
-			
+				<Card variant="outlined"  sx={{
+					background: "linear-gradient(145deg, rgba(255,217,235,1) 0%, rgba(223,236,255,1) 68%)"
+				}}>
+					<CardContent>
+						<Typography variant="subtitle1" color={"secondary"}>{date}</Typography>
+						
+						{	
+							routineInfo.exercises.map((exercise, index) => 
+								<Box 
+									key={exercise.template.id}  
+									sx={{ '&+&': { mt: 2 } }}>
+									<ExerciseEntryCard 
+										exerciseIndex={index} 
+										entries={filterEntriesByDate(exercise, date)} 
+										template={exercise.template} 
+										readOnly={!isEditionEnabled}/>
+								</Box>)
+						}
+						
+					</CardContent>
+					 {formState.isSubmitting && <LinearProgress />}
+					<CardActions>
+						{!isEditionEnabled ? <Button onClick={() => setIsEditionEnabled(true)}>Edit</Button>  : 
+							<div>
+								<Button onClick={() => setIsEditionEnabled(false)}>Cancel</Button>
+								<Button type='submit' disabled={formState.isSubmitting}>Update</Button> 
+							</div>
+						}
+					</CardActions>
+				</Card>
 
 			</form>
 		</FormProvider>

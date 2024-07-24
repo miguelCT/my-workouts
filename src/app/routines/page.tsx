@@ -1,5 +1,6 @@
 import { type Metadata } from 'next';
 import { Suspense } from 'react';
+import { LinearProgress, Typography } from '@mui/material';
 import RoutineList from '../ui/routines/RoutineList';
 
  
@@ -18,9 +19,12 @@ export default async function Page({
 
 	return (
 		<div>
-            Routines
-
-			<Suspense fallback={<div>Loading...</div>}>
+			<Typography variant="h5" color="primary" sx={{
+				my: 1
+			}}>
+				Routines
+			</Typography>
+			<Suspense fallback={<LinearProgress />}>
 				<RoutineList /> 
 			</Suspense>
 		</div>

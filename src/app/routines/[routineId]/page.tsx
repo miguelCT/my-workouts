@@ -1,4 +1,5 @@
 import RoutineInfo from '@/app/ui/routines/RoutineInfo';
+import RoutineInfoSkeleton from '@/app/ui/routines/RoutineInfoSkeleton';
 import { type Metadata } from 'next';
 import { Suspense } from 'react';
 
@@ -18,7 +19,7 @@ export default async function Page({
 
 	return (
 		<>
-			<Suspense fallback={<div>Loading...</div>} >
+			<Suspense fallback={<RoutineInfoSkeleton />} >
 				<RoutineInfo id={routineId} />
 			</Suspense>
 		</>

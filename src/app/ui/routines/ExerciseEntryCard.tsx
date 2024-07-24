@@ -43,6 +43,9 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 							slotProps={{
 								input: { readOnly }
 							}}
+							sx={{
+								backgroundColor: readOnly ? 'transparent' : 'background.paper',
+							}}
 							control={control}
 							required
 						/>
@@ -57,6 +60,9 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 							error={!entry.repetitions && index < template.series_min} 
 							slotProps={{
 								input: { readOnly }
+							}}
+							style={{
+								backgroundColor: readOnly ? 'transparent' : 'white',
 							}}
 							control={control}
 							required

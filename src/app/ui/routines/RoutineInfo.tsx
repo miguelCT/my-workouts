@@ -19,9 +19,13 @@ export default async function RoutineInfo({ id } : { id: string }) {
 
 	return (
 		<>
-			<Typography variant="h6">{name}</Typography>
+			<Typography variant="h5" color="primary" sx={{
+				my: 1
+			}}>
+				Routines - {name}
+			</Typography>
 			<Grid container spacing={1}>
-				{!hasEntriesToday && <NewDayCard routine={routineInfo}/>}
+				{/* {!hasEntriesToday && <NewDayCard routine={routineInfo}/>} */}
 				{groupedExercisesByDate.map(([date, groupedExercises]) => (
 					<RoutineGroupCard date={date} groupedExercises={groupedExercises} routineInfo={routineInfo} key={date} />
 				))}
