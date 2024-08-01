@@ -24,13 +24,13 @@ export default async function RoutineInfo({ id } : { id: string }) {
 			}}>
 				Routines - {name}
 			</Typography>
+			{!hasEntriesToday && <RoutineGroupCard date={new Date().toDateString()} routineInfo={routineInfo} empty />}
 			<Grid container spacing={1}>
-				{!hasEntriesToday && <RoutineGroupCard date={new Date().toDateString()} routineInfo={routineInfo} empty />}
-				{groupedExercisesByDate.map(([date]) => (
-					<RoutineGroupCard date={date} routineInfo={routineInfo} key={date} />
+				{groupedExercisesByDate.map(([date], index, array) => (
+					<Grid item xs={6} md key={date}>
+						<RoutineGroupCard date={date} routineInfo={routineInfo} key={date} index={array.length - index} /> 
+					</Grid>
 				))}
-
-				
 			</Grid>
 			
 		</>

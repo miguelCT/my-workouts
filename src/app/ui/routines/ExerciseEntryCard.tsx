@@ -1,4 +1,5 @@
 
+import { type UpdateRoutineEntryType } from '@/app/lib/actions';
 import { type ExerciseEntry, type ExerciseTemplate } from '@/app/lib/definitions';
 import {
 	Box,
@@ -9,7 +10,7 @@ import { TextFieldElement, useFormContext } from 'react-hook-form-mui';
 
 type ExerciseEntryCardProps = {
 	entries: ExerciseEntry[],
-	template: ExerciseTemplate,
+	template: ExerciseTemplate | UpdateRoutineEntryType['exercises'][number]['template'],
 	readOnly?: boolean,
 	exerciseIndex: number
 }
@@ -19,9 +20,11 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 	return (
 		<Box>
 			<div>
-				<Typography variant="h6" component="span">{template.name}</Typography> <Typography variant='caption'>({template.series_min} - {template.series_max} series)</Typography>
+				{'name' in template &&	<>
+					<Typography variant="h6" component="span">{template.name}</Typography> <Typography variant='caption'>({template.series_min} {(template.series_max) && `- ${template?.series_max}`} series)</Typography>
+				</>
+				}
 			</div>
-			{entries.length === 0 ?? <Typography variant="body1">No entries added yet</Typography>}
 			<Grid container spacing={0.5} >
 				<Grid item xs={6}>
 					<Typography variant='caption'>Weight</Typography>
@@ -30,6 +33,7 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 					<Typography variant='caption'>Reps</Typography>
 				</Grid>
 			</Grid>
+			{entries.length === 0 && <Typography variant="caption">No entries added yet</Typography>}
 			{entries.map((entry, index) => (
 				<Grid container spacing={0.5} key={entry.id || index}>
 					<Grid item xs={6}>
@@ -39,7 +43,6 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 							margin="none" 
 							size='small' 
 							fullWidth 
-							error={!entry.weight && index < template.series_min} 
 							slotProps={{
 								input: { readOnly }
 							}}
@@ -52,11 +55,10 @@ export default function ExerciseEntryCard({ entries, template, readOnly, exercis
 					<Grid item xs={6}>
 						<TextFieldElement
 							name={`exercises.${exerciseIndex}.entries.${index}.repetitions`}
-							placeholder={'Repetitions'}
+							placeholder={'Reps'}
 							margin="none" 
 							size='small' 
 							fullWidth 
-							error={!entry.repetitions && index < template.series_min} 
 							slotProps={{
 								input: { readOnly }
 							}}

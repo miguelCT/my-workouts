@@ -14,7 +14,7 @@ import {
 	Typography
 } from '@mui/material';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form-mui';
 
 import { CreateRoutineEntrySchema, UpdateRoutineSchema } from '@/app/lib/formSchemas';
@@ -22,18 +22,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
 import ExerciseEntryCard from './ExerciseEntryCard';
 
-function filterEntriesByDate(exercise: Exercise, date: string): ExerciseEntry[] {
-	return exercise.entries.filter(entry => new Date(entry.createdAt).toDateString() === date);
+function filterEntriesByDate(entries: ExerciseEntry[], date: string): ExerciseEntry[] {
+	return entries.filter(entry => new Date(entry.createdAt).toDateString() === date);
 }
 
 type RoutineGroupCardProps = {
 	date: string,
 	routineInfo: Routine,
-	empty?: boolean
+	empty?: boolean,
+	index?: number
 }
 
 
-export default function RoutineGroupCard({date,  routineInfo, empty}: RoutineGroupCardProps) {
+export default function RoutineGroupCard({date,  routineInfo, empty, index}: RoutineGroupCardProps) {
 	const { routineId } = useParams<{ routineId: string }>()
 	const [isEditionEnabled, setIsEditionEnabled] = useState(false);
 
@@ -47,13 +48,13 @@ export default function RoutineGroupCard({date,  routineInfo, empty}: RoutineGro
 				entries: empty ? [...Array(ex.template.series_min).keys()].map(() => ({
 					weight:  null,
 					repetitions: null
-				})) : filterEntriesByDate(ex, date)
+				})) : filterEntriesByDate(ex.entries, date)
 		  }))
 		},
 		resolver: zodResolver(empty ? CreateRoutineEntrySchema : UpdateRoutineSchema),
 	  })
 
-	const { handleSubmit, formState } = methods;
+	const { handleSubmit, formState, getValues } = methods;
 
 	const submitAction = handleSubmit(async (data) => {
 		try {
@@ -72,9 +73,11 @@ export default function RoutineGroupCard({date,  routineInfo, empty}: RoutineGro
 
 	});
 
+	const formValues = useMemo(() => getValues(), [getValues]);
 
 
-	return <Grid item xs={6} md key={date} >
+
+	return <>
 		
 		<FormProvider {...methods}>
 			<form onSubmit={submitAction} noValidate>
@@ -83,22 +86,24 @@ export default function RoutineGroupCard({date,  routineInfo, empty}: RoutineGro
 					background: empty ? 'transparent': "linear-gradient(145deg, rgba(255,217,235,1) 0%, rgba(223,236,255,1) 68%)"
 				}}>
 					<CardContent>
-						<Typography variant="subtitle1" color={"secondary"}>{date}</Typography>
+						{!empty && <>
+							<Typography variant="subtitle1" color={"secondary"}>{`Week ${index}`} </Typography>
+							<Typography variant="caption">Created at: {date} </Typography>
+						</>}
 						
 						{	
-							// ! TODO unificar para que los input del form aparezcan en función de los valores del formulario, no de routineInfo
-							routineInfo.exercises.map((exercise, index) => 
+							formValues.exercises.map((exercise, exerciseIndex) => 
 								<Box 
 									key={exercise.template.id}  
 									sx={{ '&+&': { mt: 2 } }}>
 									<ExerciseEntryCard 
-										exerciseIndex={index} 
+										exerciseIndex={exerciseIndex} 
 										entries={empty ? [...Array(exercise.template.series_min).keys()].map(() => ({
 											id: ``,
 											createdAt: '',
 											weight:  null,
 											repetitions: null
-										})): filterEntriesByDate(exercise, date)} 
+										})): filterEntriesByDate(exercise.entries, date)} 
 										template={exercise.template} 
 										readOnly={!isEditionEnabled}/>
 								</Box>)
@@ -127,5 +132,5 @@ export default function RoutineGroupCard({date,  routineInfo, empty}: RoutineGro
 
 			</form>
 		</FormProvider>
-	</Grid>;
+	</>;
 }
