@@ -36,7 +36,7 @@ type RoutineGroupCardProps = {
 
 export default function RoutineGroupCard({date,  routineInfo, empty, index}: RoutineGroupCardProps) {
 	const { routineId } = useParams<{ routineId: string }>()
-	const [isEditionEnabled, setIsEditionEnabled] = useState(false);
+	const [isEditionEnabled, setIsEditionEnabled] = useState(empty);
 
 
 	const methods = useForm<UpdateRoutineEntryType>({
@@ -124,7 +124,7 @@ export default function RoutineGroupCard({date,  routineInfo, empty, index}: Rou
 						</>  : 
 							<>
 								<Button onClick={() => setIsEditionEnabled(false)}>Cancel</Button>
-								<Button type='submit' variant="outlined" disabled={formState.isSubmitting}>Update</Button> 
+								<Button type='submit' variant="outlined" disabled={formState.isSubmitting}>Save</Button> 
 							</>
 						}
 					</CardActions>
