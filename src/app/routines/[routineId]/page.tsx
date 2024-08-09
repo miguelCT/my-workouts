@@ -3,25 +3,24 @@ import RoutineInfoSkeleton from '@/app/ui/routines/RoutineInfoSkeleton';
 import { type Metadata } from 'next';
 import { Suspense } from 'react';
 
- 
 export const metadata: Metadata = {
-	title: 'Routines',
+    title: 'Routines',
 };
 
 export default async function Page({
-	params,
+    params,
 }: {
-	params: {
-		routineId: string;
-	};
+    params: {
+        routineId: string;
+    };
 }) {
-	const routineId = params?.routineId;
+    const routineId = params?.routineId;
 
-	return (
-		<>
-			<Suspense fallback={<RoutineInfoSkeleton />} >
-				<RoutineInfo id={routineId} />
-			</Suspense>
-		</>
-	);
+    return (
+        <>
+            <Suspense fallback={<RoutineInfoSkeleton />}>
+                <RoutineInfo id={routineId} />
+            </Suspense>
+        </>
+    );
 }

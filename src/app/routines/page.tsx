@@ -3,30 +3,33 @@ import { Suspense } from 'react';
 import { LinearProgress, Typography } from '@mui/material';
 import RoutineList from '../ui/routines/RoutineList';
 
- 
 export const metadata: Metadata = {
-	title: 'Routines',
+    title: 'Routines',
 };
 
 export default async function Page({
-	searchParams,
+    searchParams,
 }: {
-	searchParams?: {
-		query?: string;
-	};
+    searchParams?: {
+        query?: string;
+    };
 }) {
-	const query = searchParams?.query ?? '';
+    const query = searchParams?.query ?? '';
 
-	return (
-		<div>
-			<Typography variant="h5" color="primary" sx={{
-				my: 1
-			}}>
-				Routines
-			</Typography>
-			<Suspense fallback={<LinearProgress />}>
-				<RoutineList /> 
-			</Suspense>
-		</div>
-	);
+    return (
+        <div>
+            <Typography
+                variant="h5"
+                color="primary"
+                sx={{
+                    my: 1,
+                }}
+            >
+                Routines
+            </Typography>
+            <Suspense fallback={<LinearProgress />}>
+                <RoutineList />
+            </Suspense>
+        </div>
+    );
 }

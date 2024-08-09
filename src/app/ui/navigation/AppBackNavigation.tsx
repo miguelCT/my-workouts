@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -14,12 +13,8 @@ import { usePathname } from 'next/navigation';
 import BackButton from './BackButton';
 
 export default function AppBackNavigation() {
-	const path = usePathname();
-	return (
-		<>
-			{ 
-				path !== "/routines" && <BackButton previousPage={'/routines'}  />
-			}
-		</>
-	);
+    const path = usePathname();
+    return (
+        <>{path !== '/routines' && <BackButton previousPage={'/routines'} />}</>
+    );
 }
