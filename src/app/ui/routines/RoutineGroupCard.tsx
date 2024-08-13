@@ -38,8 +38,14 @@ function filterEntriesByDate(
     entries: ExerciseEntry[],
     date: string,
 ): ExerciseEntry[] {
-    return entries.filter(
+    const entriesByDate = entries.filter(
         entry => new Date(entry.createdAt).toDateString() === date,
+    );
+    return (
+        entriesByDate
+            .filter(obj => obj.repetitions !== null)
+            // Concatenate with objects having undefined repetitionss
+            .concat(entriesByDate.filter(obj => obj.repetitions === null))
     );
 }
 

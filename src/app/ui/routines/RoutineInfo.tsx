@@ -48,7 +48,7 @@ export default async function RoutineInfo({ id }: { id: string }) {
 
             <Grid container spacing={1}>
                 {groupedExercisesByDate.map(([date], index, array) => (
-                    <Grid item xs={6} md key={date}>
+                    <Grid item xs={6} md={3} key={date}>
                         <RoutineGroupCard
                             date={date}
                             routineInfo={routineInfo}
