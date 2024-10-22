@@ -1,9 +1,10 @@
 import { fetchRoutines } from '@/app/lib/data';
 import { Avatar, Card, CardActionArea, CardHeader } from '@mui/material';
-import Box from 'next-auth/providers/box';
 import Link from 'next/link';
 
-export default async function RoutineList() {
+import { type FC } from 'react';
+
+const RoutineList: FC = async () => {
     const routines = await fetchRoutines();
     return (
         <>
@@ -42,4 +43,6 @@ export default async function RoutineList() {
             ))}
         </>
     );
-}
+};
+
+export default RoutineList;

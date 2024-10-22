@@ -1,4 +1,4 @@
-import { type Metadata } from 'next';
+import { type Metadata, type NextPage } from 'next';
 import { Suspense } from 'react';
 import { LinearProgress, Typography } from '@mui/material';
 import RoutineList from '../ui/routines/RoutineList';
@@ -7,15 +7,7 @@ export const metadata: Metadata = {
     title: 'Routines',
 };
 
-export default async function Page({
-    searchParams,
-}: {
-    searchParams?: {
-        query?: string;
-    };
-}) {
-    const query = searchParams?.query ?? '';
-
+const Page: NextPage = () => {
     return (
         <div>
             <Typography
@@ -32,4 +24,6 @@ export default async function Page({
             </Suspense>
         </div>
     );
-}
+};
+
+export default Page;
