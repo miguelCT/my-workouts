@@ -6,50 +6,86 @@ import { db } from '@/server/db';
 import { exerciseEntries } from '@/server/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
-import { type z } from 'zod';
+import { z } from 'zod';
+import { flattenValidationErrors } from 'next-safe-action';
 import { CreateRoutineEntrySchema, UpdateRoutineSchema } from './formSchemas';
+import actionClient from './safe-action';
 
 export type CreateRoutineEntryType = z.infer<typeof CreateRoutineEntrySchema>;
 
-export async function createDayInRoutine(
-    routineId: string,
-    formData: CreateRoutineEntryType,
-) {
-    try {
-        const validatedFields = CreateRoutineEntrySchema.safeParse(formData);
+export const createDayInRoutine = actionClient
+    .schema(CreateRoutineEntrySchema, {
+        // TODO review how to display validation errors in the form
+        handleValidationErrorsShape: ve => ({
+            errors: flattenValidationErrors(ve).fieldErrors,
+            message: 'Missing Fields. Failed to create Day.',
+        }),
+    })
+    .bindArgsSchemas<[routineId: z.ZodString]>([z.string().uuid()])
+    .action(
+        async ({
+            parsedInput: formData,
+            bindArgsParsedInputs: [routineId],
+        }) => {
+            // Prepare data for insertion into the database
+            const newEntries = formData.exercises.flatMap(
+                ({ template, entries }) =>
+                    entries.map(e => ({
+                        template_id: template.id,
+                        ...e,
+                    })),
+            );
 
-        // If form validation fails, return errors early. Otherwise, continue.
-        if (!validatedFields.success) {
-            return {
-                errors: validatedFields.error.flatten().fieldErrors,
-                message: 'Missing Fields. Failed to Create Day.',
-            };
-        }
+            const result = await db.insert(exerciseEntries).values(newEntries);
 
-        // Prepare data for insertion into the database
-        const newEntries = validatedFields.data.exercises.flatMap(
-            ({ template, entries }) =>
-                entries.map(e => ({
-                    template_id: template.id,
-                    ...e,
-                })),
-        );
-
-        const result = await db.insert(exerciseEntries).values(newEntries);
-
-        revalidatePath(`/routines/${routineId}`);
-
-        return result;
-    } catch (error) {
-        console.error(error);
-        return {
-            message: 'Database Error: Failed to Create Invoice.',
-        };
-    }
-}
+            revalidatePath(`/routines/${routineId}`);
+            return result;
+        },
+    );
 
 export type UpdateRoutineEntryType = z.infer<typeof UpdateRoutineSchema>;
-export async function updateDayInRoutine(
+
+export const updateDayInRoutine = actionClient
+    .schema(UpdateRoutineSchema, {
+        // TODO review how to display validation errors in the form
+        handleValidationErrorsShape: ve => ({
+            errors: flattenValidationErrors(ve).fieldErrors,
+            message: 'Missing Fields. Failed to Update Day.',
+        }),
+    })
+    .bindArgsSchemas<[routineId: z.ZodString]>([z.string().uuid()])
+    .action(
+        async ({
+            parsedInput: formData,
+            bindArgsParsedInputs: [routineId],
+        }) => {
+            // Prepare data for insertion into the database
+            const newEntries = formData.exercises.flatMap(
+                ({ template, entries }) =>
+                    entries.map(e => ({
+                        template_id: template.id,
+                        ...e,
+                    })),
+            );
+
+            const promises = newEntries.map(e =>
+                db
+                    .update(exerciseEntries)
+                    .set(e)
+                    .where(
+                        and(
+                            eq(exerciseEntries.id, e.id),
+                            eq(exerciseEntries.template_id, e.template_id),
+                        ),
+                    ),
+            );
+            await Promise.all(promises);
+            revalidatePath(`/routines/${routineId}`);
+            return {};
+        },
+    );
+
+export async function updateDayInRoutineold(
     routineId: string,
     formData: UpdateRoutineEntryType,
 ) {
@@ -59,6 +95,7 @@ export async function updateDayInRoutine(
         });
 
         const validatedFields = UpdateRoutineSchema.safeParse(formData);
+
         // If form validation fails, return errors early. Otherwise, continue.
         if (!validatedFields.success) {
             console.error(validatedFields.error.flatten().fieldErrors);

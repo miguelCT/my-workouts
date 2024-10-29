@@ -5,19 +5,13 @@ import {
     updateDayInRoutine,
     type UpdateRoutineEntryType,
 } from '@/app/lib/actions';
-import {
-    type Exercise,
-    type ExerciseEntry,
-    type ExerciseTemplate,
-    type Routine,
-} from '@/app/lib/definitions';
+import { type ExerciseEntry, type Routine } from '@/app/lib/definitions';
 import {
     Box,
     Button,
     Card,
     CardActions,
     CardContent,
-    Grid,
     IconButton,
     LinearProgress,
     Typography,
@@ -64,7 +58,6 @@ export default function RoutineGroupCard({
 }: RoutineGroupCardProps) {
     const { routineId } = useParams<{ routineId: string }>();
     const [isEditionEnabled, setIsEditionEnabled] = useState(empty);
-
     const methods = useForm<UpdateRoutineEntryType>({
         defaultValues: {
             id: routineId,
@@ -88,12 +81,12 @@ export default function RoutineGroupCard({
 
     const submitAction = handleSubmit(async data => {
         try {
-            if (empty) {
-                await createDayInRoutine(routineId, data);
-            } else {
-                await updateDayInRoutine(routineId, data);
+            const result = empty
+                ? await createDayInRoutine(routineId, data)
+                : await updateDayInRoutine(routineId, data);
+            if (!result?.serverError && !result?.validationErrors) {
+                setIsEditionEnabled(false);
             }
-            setIsEditionEnabled(false);
         } catch (error) {
             console.error(` Error: ${(error as Error)?.message}`);
         }
@@ -104,7 +97,7 @@ export default function RoutineGroupCard({
     return (
         <>
             <FormProvider {...methods}>
-                <form onSubmit={submitAction} noValidate>
+                <form onSubmit={submitAction} noValidate autoComplete="off">
                     <Card
                         variant="outlined"
                         sx={{
