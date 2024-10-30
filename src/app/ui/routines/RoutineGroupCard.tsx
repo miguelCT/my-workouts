@@ -7,6 +7,7 @@ import {
 } from '@/app/lib/actions';
 import { type ExerciseEntry, type Routine } from '@/app/lib/definitions';
 import {
+    Alert,
     Box,
     Button,
     Card,
@@ -16,7 +17,7 @@ import {
     LinearProgress,
     Typography,
 } from '@mui/material';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form-mui';
 
@@ -27,6 +28,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
 import ExerciseEntryCard from './ExerciseEntryCard';
+import SubmissionErrorAlert from '../SumissionErrorAlert';
 
 function filterEntriesByDate(
     entries: ExerciseEntry[],
@@ -57,7 +59,16 @@ export default function RoutineGroupCard({
     index,
 }: RoutineGroupCardProps) {
     const { routineId } = useParams<{ routineId: string }>();
+    const router = useRouter();
     const [isEditionEnabled, setIsEditionEnabled] = useState(empty);
+    const [serverSubmitResult, setServerSubmitResult] =
+        useState<
+            Awaited<
+                ReturnType<
+                    typeof createDayInRoutine & typeof updateDayInRoutine
+                >
+            >
+        >();
     const methods = useForm<UpdateRoutineEntryType>({
         defaultValues: {
             id: routineId,
@@ -84,8 +95,12 @@ export default function RoutineGroupCard({
             const result = empty
                 ? await createDayInRoutine(routineId, data)
                 : await updateDayInRoutine(routineId, data);
+
+            setServerSubmitResult(result);
+
             if (!result?.serverError && !result?.validationErrors) {
                 setIsEditionEnabled(false);
+                router.refresh();
             }
         } catch (error) {
             console.error(` Error: ${(error as Error)?.message}`);
@@ -159,6 +174,13 @@ export default function RoutineGroupCard({
                             )}
                         </CardContent>
                         {formState.isSubmitting && <LinearProgress />}
+                        <SubmissionErrorAlert
+                            serverError={serverSubmitResult?.serverError}
+                            validationErrors={
+                                serverSubmitResult?.validationErrors
+                            }
+                        />
+
                         <CardActions
                             sx={{
                                 justifyContent: 'flex-end',
