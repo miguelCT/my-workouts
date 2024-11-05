@@ -1,8 +1,21 @@
 import { fetchRoutines } from '@/app/lib/data';
-import { Avatar, Card, CardActionArea, CardHeader } from '@mui/material';
+import {
+    Avatar,
+    Card,
+    CardActionArea,
+    CardHeader,
+    IconButton,
+    Typography,
+} from '@mui/material';
+
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import ArchiveIcon from '@mui/icons-material/ArchiveOutlined';
 import Link from 'next/link';
 
 import { type FC } from 'react';
+import { type Routine } from '@/app/lib/definitions';
+import FavButton from '../FavButton';
 
 const RoutineList: FC = async () => {
     const routines = await fetchRoutines();
@@ -36,6 +49,12 @@ const RoutineList: FC = async () => {
                                         .map(word => word[0])
                                         .join('')}
                                 </Avatar>
+                            }
+                            action={
+                                <FavButton
+                                    status={routine.status}
+                                    routineId={routine.id}
+                                />
                             }
                         />
                     </CardActionArea>

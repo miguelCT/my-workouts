@@ -1,12 +1,15 @@
 'use server';
 
 import { db } from '@/server/db';
-import { exerciseEntries } from '@/server/db/schema';
+import { exerciseEntries, routines } from '@/server/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { flattenValidationErrors } from 'next-safe-action';
+import { setTimeout } from 'timers';
+import { revalidatePath } from 'next/cache';
 import { CreateRoutineEntrySchema, UpdateRoutineSchema } from './formSchemas';
 import actionClient from './safe-action';
+import { routineStatus } from './constants';
 
 export type CreateRoutineEntryType = z.infer<typeof CreateRoutineEntrySchema>;
 
@@ -77,3 +80,25 @@ export const updateDayInRoutine = actionClient
             return {};
         },
     );
+
+export const updateRoutineStatus = actionClient
+    .schema(
+        z.object({
+            id: z.string().uuid(),
+            status: z.enum(routineStatus), // Update the status enum as needed
+        }),
+    )
+    .action(async ({ parsedInput: { id, status } }) => {
+        try {
+            await db
+                .update(routines)
+                .set({ status })
+                .where(eq(routines.id, id));
+
+            revalidatePath('/routines');
+            return {};
+        } catch (error) {
+            console.error('Error updating routine status:', error);
+            return { message: 'Failed to update routine status' };
+        }
+    });

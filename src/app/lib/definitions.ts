@@ -1,3 +1,5 @@
+import { type routines } from '@/server/db/schema';
+import { type InferSelectModel } from 'drizzle-orm';
 import { type z } from 'zod';
 import { type ExerciseEntrySchema } from './formSchemas';
 // Exercise Template Type
@@ -14,15 +16,11 @@ export type ExerciseTemplate = {
 };
 
 // Routine Type
-export type Routine = {
-    id: string;
-    name: string;
-    createdAt: string; // ISO date format: YYYY-MM-DD
-    updatedAt: string; // ISO date format: YYYY-MM-DD
+export type Routine = InferSelectModel<typeof routines> & {
     exercises: Exercise[];
 };
 
-export type RoutineItem = Pick<Routine, 'id' | 'name' | 'createdAt'>;
+export type RoutineItem = Pick<Routine, 'id' | 'name' | 'createdAt' | 'status'>;
 
 // Exercise Type
 export type Exercise = {

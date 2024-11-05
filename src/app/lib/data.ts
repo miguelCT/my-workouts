@@ -1,3 +1,5 @@
+'use server';
+
 /* eslint-disable import/prefer-default-export */
 import { db } from '@/server/db';
 import {
@@ -5,7 +7,7 @@ import {
     exerciseTemplates,
     routines,
 } from '@/server/db/schema';
-import { desc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import groupBy from 'lodash.groupby';
 import { unstable_noStore as noStore } from 'next/cache';
 import { notFound } from 'next/navigation';
@@ -34,11 +36,11 @@ export async function fetchRoutine(routineId: string): Promise<Routine> {
         )
         .orderBy(desc(exerciseEntries.createdAt));
 
-    if (!result) {
+    if (!result?.[0]?.routine) {
         return notFound();
     }
 
-    const routineInfo = result?.[0]?.routine as unknown as Routine;
+    const routineInfo = result[0].routine;
 
     const groupedEntriesByTemplate = groupBy(
         result,
@@ -66,8 +68,10 @@ export async function fetchRoutines(): Promise<RoutineItem[]> {
                 id: routines.id,
                 name: routines.name,
                 createdAt: routines.createdAt,
+                status: routines.status,
             })
-            .from(routines);
+            .from(routines)
+            .orderBy(asc(routines.name));
     } catch (error) {
         console.error('Failed to fetch Routines', error);
         throw new Error('Failed to fetch Routines.');
