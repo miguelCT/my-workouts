@@ -13,11 +13,34 @@ CREATE TABLE IF NOT EXISTS "my-workouts_account" (
 	CONSTRAINT "my-workouts_account_provider_providerAccountId_pk" PRIMARY KEY("provider","providerAccountId")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "my-workouts_post" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" varchar(256),
-	"createdById" varchar(255) NOT NULL,
-	"created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+CREATE TABLE IF NOT EXISTS "my-workouts_exercise_entry" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"template_id" uuid,
+	"weight" integer,
+	"repetitions" integer,
+	"created_at" date DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"updated_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "my-workouts_exercise_template" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"routine_id" uuid,
+	"name" varchar(256) NOT NULL,
+	"description" text,
+	"group" varchar(256),
+	"series_max" integer,
+	"series_min" integer NOT NULL,
+	"repetition_max" integer,
+	"repetition_min" integer NOT NULL,
+	"date" date DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"updatedAt" date
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "my-workouts_routine" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar(256) NOT NULL,
+	"status" text DEFAULT 'active' NOT NULL,
+	"date" date DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"updatedAt" timestamp with time zone
 );
 --> statement-breakpoint
@@ -49,7 +72,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "my-workouts_post" ADD CONSTRAINT "my-workouts_post_createdById_my-workouts_user_id_fk" FOREIGN KEY ("createdById") REFERENCES "public"."my-workouts_user"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "my-workouts_exercise_entry" ADD CONSTRAINT "my-workouts_exercise_entry_template_id_my-workouts_exercise_template_id_fk" FOREIGN KEY ("template_id") REFERENCES "public"."my-workouts_exercise_template"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "my-workouts_exercise_template" ADD CONSTRAINT "my-workouts_exercise_template_routine_id_my-workouts_routine_id_fk" FOREIGN KEY ("routine_id") REFERENCES "public"."my-workouts_routine"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -61,6 +90,5 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "account_userId_idx" ON "my-workouts_account" ("userId");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "createdById_idx" ON "my-workouts_post" ("createdById");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "name_idx" ON "my-workouts_post" ("name");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "routine_name_idx" ON "my-workouts_routine" ("name");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "session_userId_idx" ON "my-workouts_session" ("userId");

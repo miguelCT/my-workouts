@@ -1,0 +1,1 @@
+ALTER TABLE "my-workouts_routine" DROP COLUMN IF EXISTS "status";

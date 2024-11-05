@@ -1,6 +1,6 @@
 {
-  "id": "4f7d1647-9a71-4106-9d51-2f5f5a763e7e",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "e52ed91b-62f8-43e9-8e55-d7189b272006",
+  "prevId": "4f7d1647-9a71-4106-9d51-2f5f5a763e7e",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -280,13 +280,6 @@
           "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'active'"
         },
         "date": {
           "name": "date",

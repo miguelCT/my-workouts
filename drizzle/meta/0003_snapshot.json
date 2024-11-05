@@ -1,6 +1,6 @@
 {
-  "id": "4f7d1647-9a71-4106-9d51-2f5f5a763e7e",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "8e2d42cf-4543-4464-a8a1-773d92e9ac91",
+  "prevId": "20ad2240-229c-4c3d-9806-ad660f36e35e",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -283,7 +283,8 @@
         },
         "status": {
           "name": "status",
-          "type": "text",
+          "type": "status",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
           "default": "'active'"
@@ -443,7 +444,17 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "public.status": {
+      "name": "status",
+      "schema": "public",
+      "values": [
+        "fav",
+        "archived",
+        "active"
+      ]
+    }
+  },
   "schemas": {},
   "_meta": {
     "columns": {},

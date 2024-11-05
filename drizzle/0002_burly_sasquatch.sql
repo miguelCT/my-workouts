@@ -1,0 +1,1 @@
+ALTER TABLE "my-workouts_routine" ADD COLUMN "status" text DEFAULT 'active' NOT NULL;

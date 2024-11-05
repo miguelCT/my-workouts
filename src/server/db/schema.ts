@@ -1,8 +1,10 @@
+import { routineStatus } from '@/app/lib/constants';
 import { relations, sql } from 'drizzle-orm';
 import {
     date,
     index,
     integer,
+    pgEnum,
     pgTableCreator,
     primaryKey,
     serial,
@@ -110,11 +112,14 @@ export const verificationTokens = createTable(
     }),
 );
 
+const routineStatusEnum = pgEnum('status', routineStatus);
+
 export const routines = createTable(
     'routine',
     {
         id: uuid('id').defaultRandom().notNull().primaryKey(),
         name: varchar('name', { length: 256 }).notNull(),
+        status: routineStatusEnum('status').notNull().default('active'),
         createdAt: date('date')
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
@@ -161,3 +166,9 @@ export const exerciseEntries = createTable('exercise_entry', {
 // 		entry_id: uuid('entry_id').references(() => exerciseEntries.id).notNull()
 // 	},
 // );
+
+// TODO use this relation
+// export const routineWithExercises = relations(routines, ({ many }) => ({
+//     template: many(exerciseTemplates),
+//     entries: many(exerciseEntries),
+// }));
