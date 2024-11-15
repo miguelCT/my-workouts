@@ -17,6 +17,8 @@ import {
     type Routine,
     type RoutineItem,
 } from './definitions';
+
+import { RoutineStatus } from './constants';
 // import {routines as mockRoutines} from './mockData'
 
 export async function fetchRoutine(routineId: string): Promise<Routine> {
@@ -80,8 +82,8 @@ export async function fetchRoutines(
                 filters?.filteredBy
                     ? eq(routines.status, filters.filteredBy)
                     : or(
-                          eq(routines.status, 'active'),
-                          eq(routines.status, 'fav'),
+                          eq(routines.status, RoutineStatus.ACTIVE),
+                          eq(routines.status, RoutineStatus.FAV),
                       ),
             )
             .orderBy(asc(routines.name));

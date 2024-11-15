@@ -1,4 +1,4 @@
-import { routineStatusList } from '@/app/lib/constants';
+import { routineStatusList, RoutineStatus } from '@/app/lib/constants';
 import { relations, sql } from 'drizzle-orm';
 import {
     date,
@@ -119,7 +119,9 @@ export const routines = createTable(
     {
         id: uuid('id').defaultRandom().notNull().primaryKey(),
         name: varchar('name', { length: 256 }).notNull(),
-        status: routineStatusEnum('status').notNull().default('active'),
+        status: routineStatusEnum('status')
+            .notNull()
+            .default(RoutineStatus.ACTIVE),
         createdAt: date('date')
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
