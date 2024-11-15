@@ -9,7 +9,7 @@ import { setTimeout } from 'timers';
 import { revalidatePath } from 'next/cache';
 import { CreateRoutineEntrySchema, UpdateRoutineSchema } from './formSchemas';
 import actionClient from './safe-action';
-import { routineStatus } from './constants';
+import { routineStatusList } from './constants';
 
 export type CreateRoutineEntryType = z.infer<typeof CreateRoutineEntrySchema>;
 
@@ -85,7 +85,7 @@ export const updateRoutineStatus = actionClient
     .schema(
         z.object({
             id: z.string().uuid(),
-            status: z.enum(routineStatus), // Update the status enum as needed
+            status: z.enum(routineStatusList), // Update the status enum as needed
         }),
     )
     .action(async ({ parsedInput: { id, status } }) => {

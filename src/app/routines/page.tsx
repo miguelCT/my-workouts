@@ -1,6 +1,7 @@
 import { type Metadata, type NextPage } from 'next';
 import { Suspense } from 'react';
 import { Divider, LinearProgress, Typography } from '@mui/material';
+import { RoutineStatus } from '@/app/lib/constants';
 import RoutineList from '../ui/routines/RoutineList';
 
 export const metadata: Metadata = {
@@ -34,7 +35,7 @@ const Page: NextPage = () => {
                 Archived Routines
             </Typography>
             <Suspense fallback={<LinearProgress />}>
-                <RoutineList filteredBy="archived" />
+                <RoutineList filteredBy={RoutineStatus.ARCHIVED} />
             </Suspense>
         </div>
     );

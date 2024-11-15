@@ -9,6 +9,7 @@ import ArchiveIcon from '@mui/icons-material/Archive';
 import { type Routine } from '@/app/lib/definitions';
 import { useOptimisticAction } from 'next-safe-action/hooks';
 import { type FC } from 'react';
+import { RoutineStatus } from '@/app/lib/constants';
 
 type ArchiveButtonProps = {
     routineId: string;
@@ -38,11 +39,14 @@ const ArchiveButton: FC<ArchiveButtonProps> = ({ status, routineId }) => {
             onClick={e => {
                 e.preventDefault();
                 e.stopPropagation();
-                // TODO review magic strings
-                onStatusChange(status === 'archived' ? 'active' : 'archived');
+                onStatusChange(
+                    status === RoutineStatus.ARCHIVED
+                        ? RoutineStatus.ACTIVE
+                        : RoutineStatus.ARCHIVED,
+                );
             }}
         >
-            {optimisticState === 'archived' ? (
+            {optimisticState === RoutineStatus.ARCHIVED ? (
                 <ArchiveIcon />
             ) : (
                 <ArchivOutlinedIcon />

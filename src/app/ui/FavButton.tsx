@@ -9,6 +9,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { type Routine } from '@/app/lib/definitions';
 import { useOptimisticAction } from 'next-safe-action/hooks';
 import { type FC } from 'react';
+import { RoutineStatus } from '@/app/lib/constants';
 
 type FavButtonProps = {
     routineId: string;
@@ -38,10 +39,18 @@ const FavButton: FC<FavButtonProps> = ({ status, routineId }) => {
             onClick={e => {
                 e.preventDefault();
                 e.stopPropagation();
-                onStatusChange(status === 'fav' ? 'active' : 'fav');
+                onStatusChange(
+                    status === RoutineStatus.FAV
+                        ? RoutineStatus.ACTIVE
+                        : RoutineStatus.FAV,
+                );
             }}
         >
-            {optimisticState === 'fav' ? <StarIcon /> : <StarBorderIcon />}
+            {optimisticState === RoutineStatus.FAV ? (
+                <StarIcon />
+            ) : (
+                <StarBorderIcon />
+            )}
         </IconButton>
     );
 };

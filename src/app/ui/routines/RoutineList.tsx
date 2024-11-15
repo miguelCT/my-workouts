@@ -1,20 +1,11 @@
 import { fetchRoutines } from '@/app/lib/data';
-import {
-    Avatar,
-    Card,
-    CardActionArea,
-    CardHeader,
-    IconButton,
-    Typography,
-} from '@mui/material';
+import { Avatar, Card, CardActionArea, CardHeader } from '@mui/material';
 
-import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import ArchiveIcon from '@mui/icons-material/ArchiveOutlined';
 import Link from 'next/link';
 
-import { type FC } from 'react';
+import { RoutineStatus } from '@/app/lib/constants';
 import { type Routine } from '@/app/lib/definitions';
+import { type FC } from 'react';
 import FavButton from '../FavButton';
 
 type RoutineListProps = {
@@ -37,7 +28,7 @@ const RoutineList: FC<RoutineListProps> = async ({ filteredBy }) => {
                     // TODO revisar este código duplicado en RoutineGriupCard
                     sx={{
                         background:
-                            routine.status !== 'archived'
+                            routine.status !== RoutineStatus.ARCHIVED
                                 ? 'linear-gradient(145deg, rgba(255,217,235,1) 0%, rgba(223,236,255,1) 68%)'
                                 : 'transparent',
                         '&+&': {

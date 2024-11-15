@@ -1,4 +1,4 @@
-import { routineStatus } from '@/app/lib/constants';
+import { routineStatusList } from '@/app/lib/constants';
 import { relations, sql } from 'drizzle-orm';
 import {
     date,
@@ -112,7 +112,7 @@ export const verificationTokens = createTable(
     }),
 );
 
-const routineStatusEnum = pgEnum('status', routineStatus);
+const routineStatusEnum = pgEnum('status', routineStatusList);
 
 export const routines = createTable(
     'routine',
