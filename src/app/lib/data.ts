@@ -7,7 +7,7 @@ import {
     exerciseTemplates,
     routines,
 } from '@/server/db/schema';
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, desc, eq, or } from 'drizzle-orm';
 import groupBy from 'lodash.groupby';
 import { unstable_noStore as noStore } from 'next/cache';
 import { notFound } from 'next/navigation';
@@ -61,7 +61,11 @@ export async function fetchRoutine(routineId: string): Promise<Routine> {
     return routine;
 }
 
-export async function fetchRoutines(): Promise<RoutineItem[]> {
+type FetchRoutinesFilters = { filteredBy?: Routine['status'] };
+
+export async function fetchRoutines(
+    filters?: FetchRoutinesFilters,
+): Promise<RoutineItem[]> {
     try {
         return await db
             .select({
@@ -71,6 +75,15 @@ export async function fetchRoutines(): Promise<RoutineItem[]> {
                 status: routines.status,
             })
             .from(routines)
+            // TODO review magic strings
+            .where(
+                filters?.filteredBy
+                    ? eq(routines.status, filters.filteredBy)
+                    : or(
+                          eq(routines.status, 'active'),
+                          eq(routines.status, 'fav'),
+                      ),
+            )
             .orderBy(asc(routines.name));
     } catch (error) {
         console.error('Failed to fetch Routines', error);

@@ -17,8 +17,17 @@ import { type FC } from 'react';
 import { type Routine } from '@/app/lib/definitions';
 import FavButton from '../FavButton';
 
-const RoutineList: FC = async () => {
-    const routines = await fetchRoutines();
+type RoutineListProps = {
+    filteredBy?: Routine['status'];
+};
+const RoutineList: FC<RoutineListProps> = async ({ filteredBy }) => {
+    const routines = await fetchRoutines(
+        filteredBy
+            ? {
+                  filteredBy,
+              }
+            : undefined,
+    );
     return (
         <>
             {routines.map(routine => (
@@ -28,7 +37,9 @@ const RoutineList: FC = async () => {
                     // TODO revisar este código duplicado en RoutineGriupCard
                     sx={{
                         background:
-                            'linear-gradient(145deg, rgba(255,217,235,1) 0%, rgba(223,236,255,1) 68%)',
+                            routine.status !== 'archived'
+                                ? 'linear-gradient(145deg, rgba(255,217,235,1) 0%, rgba(223,236,255,1) 68%)'
+                                : 'transparent',
                         '&+&': {
                             mt: 2,
                         },

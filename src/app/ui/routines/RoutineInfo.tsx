@@ -3,6 +3,8 @@ import { groupExercisesByEntryDate } from '@/app/lib/utils';
 import { Box, Grid, Typography } from '@mui/material';
 import RoutineGroupCard from './RoutineGroupCard';
 import RoutineWeekStartDialog from './RoutineWeekStartDialog';
+import FavButton from '../FavButton';
+import ArchiveButton from '../ArchiveButton';
 
 export default async function RoutineInfo({ id }: { id: string }) {
     const routineInfo = await fetchRoutine(id);
@@ -25,15 +27,25 @@ export default async function RoutineInfo({ id }: { id: string }) {
                     my: 1,
                 }}
             >
-                <Typography
-                    variant="h5"
-                    color="primary"
-                    sx={{
-                        my: 1,
-                    }}
-                >
-                    Routines - {name}
-                </Typography>
+                <Box sx={{ display: 'flex' }}>
+                    <FavButton
+                        routineId={routineInfo.id}
+                        status={routineInfo.status}
+                    />
+                    <ArchiveButton
+                        routineId={routineInfo.id}
+                        status={routineInfo.status}
+                    />
+                    <Typography
+                        variant="h5"
+                        color="primary"
+                        sx={{
+                            my: 1,
+                        }}
+                    >
+                        Routines - {name}
+                    </Typography>
+                </Box>
 
                 {!hasEntriesToday && (
                     <RoutineWeekStartDialog>
