@@ -5,9 +5,14 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
+import { getServerAuthSession } from '@/server/auth';
 import AppBackNavigation from './AppBackNavigation';
+import SignOutButton from '../auth/SignOutButton';
+import SignInButton from '../auth/SignInButton';
 
-export default function AppBar() {
+export default async function AppBar() {
+    const session = await getServerAuthSession();
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <MuiAppBar
@@ -32,9 +37,19 @@ export default function AppBar() {
                         component="div"
                         sx={{ flexGrow: 1 }}
                     >
+                        <AppBackNavigation />
                         My workouts
                     </Typography>
-                    <AppBackNavigation />
+                    <div>
+                        {session ? (
+                            <>
+                                {session?.user?.email}
+                                <SignOutButton />
+                            </>
+                        ) : (
+                            <SignInButton />
+                        )}
+                    </div>
                 </Toolbar>
             </MuiAppBar>
         </Box>

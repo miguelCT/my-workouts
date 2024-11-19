@@ -15,6 +15,7 @@ import {
     users,
     verificationTokens,
 } from '@/server/db/schema';
+import NextAuth from 'next-auth';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -81,3 +82,6 @@ export const authOptions: NextAuthOptions = {
  * @see https://next-auth.js.org/configuration/nextjs
  */
 export const getServerAuthSession = () => getServerSession(authOptions);
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+export const handler = NextAuth(authOptions);

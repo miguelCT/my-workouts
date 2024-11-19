@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@mui/material';
 import { signIn } from 'next-auth/react';
 
 export default function SignInButton() {
@@ -9,7 +10,14 @@ export default function SignInButton() {
                 await signIn();
             }}
         >
-            <button type="submit">Sign in</button>
+            <Button
+                type="submit"
+                variant="contained"
+                color="inherit"
+                size="small"
+            >
+                Sign in
+            </Button>
         </form>
     );
 }

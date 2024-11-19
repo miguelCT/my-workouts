@@ -1,7 +1,7 @@
+import { RoutineStatus } from '@/app/lib/constants';
+import { Divider, LinearProgress, Typography } from '@mui/material';
 import { type Metadata, type NextPage } from 'next';
 import { Suspense } from 'react';
-import { Divider, LinearProgress, Typography } from '@mui/material';
-import { RoutineStatus } from '@/app/lib/constants';
 import RoutineList from '../ui/routines/RoutineList';
 
 export const metadata: Metadata = {
@@ -40,5 +40,4 @@ const Page: NextPage = () => {
         </div>
     );
 };
-
 export default Page;

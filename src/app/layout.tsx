@@ -9,6 +9,7 @@ import { Container, CssBaseline, ThemeProvider } from '@mui/material';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { GeistSans } from 'geist/font/sans';
 import AppBar from './ui/navigation/AppBar';
+import Auth from './ui/auth/Auth';
 
 export const metadata = {
     title: 'Create T3 App',
@@ -28,10 +29,12 @@ export default function RootLayout({
                     <CssBaseline enableColorScheme />
 
                     <AppRouterCacheProvider>
-                        <Container sx={{ py: 2, pb: '66px' }}>
-                            {children}
-                        </Container>
-                        <AppBar />
+                        <Auth>
+                            <Container sx={{ py: 2, pb: '66px' }}>
+                                {children}
+                            </Container>
+                            <AppBar />
+                        </Auth>
                     </AppRouterCacheProvider>
                 </ThemeProvider>
             </body>
