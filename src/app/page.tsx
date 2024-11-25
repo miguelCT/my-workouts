@@ -2,10 +2,6 @@ import { getServerAuthSession } from '@/server/auth';
 import SignInButton from './ui/auth/SignInButton';
 import SignOutButton from './ui/auth/SignOutButton';
 
-function SignIn() {
-    return <SignInButton />;
-}
-
 export default async function Page() {
     const session = await getServerAuthSession();
     const email = session?.user?.email;
@@ -20,7 +16,7 @@ export default async function Page() {
                         {email} <SignOutButton />
                     </>
                 ) : (
-                    <SignIn />
+                    <SignInButton />
                 )}
             </div>
         </section>

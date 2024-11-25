@@ -1,7 +1,7 @@
 'use client';
 
 import { updateRoutineStatus } from '@/app/lib/actions';
-import { IconButton } from '@mui/material';
+import { IconButton, Badge } from '@mui/material';
 
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -17,7 +17,7 @@ type FavButtonProps = {
 };
 
 const FavButton: FC<FavButtonProps> = ({ status, routineId }) => {
-    const { execute, optimisticState } = useOptimisticAction(
+    const { execute, optimisticState, hasErrored } = useOptimisticAction(
         updateRoutineStatus,
         {
             currentState: status,
@@ -46,11 +46,13 @@ const FavButton: FC<FavButtonProps> = ({ status, routineId }) => {
                 );
             }}
         >
-            {optimisticState === RoutineStatus.FAV ? (
-                <StarIcon />
-            ) : (
-                <StarBorderIcon />
-            )}
+            <Badge color="error" invisible={!hasErrored} variant="dot">
+                {optimisticState === RoutineStatus.FAV ? (
+                    <StarIcon />
+                ) : (
+                    <StarBorderIcon />
+                )}
+            </Badge>
         </IconButton>
     );
 };

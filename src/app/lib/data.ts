@@ -1,6 +1,7 @@
 'use server';
 
 /* eslint-disable import/prefer-default-export */
+import { checkAuth } from '@/server/auth';
 import { db } from '@/server/db';
 import {
     exerciseEntries,
@@ -23,6 +24,7 @@ import { RoutineStatus } from './constants';
 
 export async function fetchRoutine(routineId: string): Promise<Routine> {
     noStore();
+    await checkAuth();
 
     const result = await db
         .select()
@@ -68,6 +70,7 @@ type FetchRoutinesFilters = { filteredBy?: Routine['status'] };
 export async function fetchRoutines(
     filters?: FetchRoutinesFilters,
 ): Promise<RoutineItem[]> {
+    await checkAuth();
     try {
         return await db
             .select({
@@ -77,7 +80,6 @@ export async function fetchRoutines(
                 status: routines.status,
             })
             .from(routines)
-            // TODO review magic strings
             .where(
                 filters?.filteredBy
                     ? eq(routines.status, filters.filteredBy)

@@ -16,6 +16,7 @@ import {
     verificationTokens,
 } from '@/server/db/schema';
 import NextAuth from 'next-auth';
+import { redirect } from 'next/navigation';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -85,3 +86,9 @@ export const getServerAuthSession = () => getServerSession(authOptions);
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 export const handler = NextAuth(authOptions);
+
+export const checkAuth = async () => {
+    const session = await getServerAuthSession();
+
+    if (!session) redirect('/login');
+};

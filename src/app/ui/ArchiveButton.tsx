@@ -1,7 +1,7 @@
 'use client';
 
 import { updateRoutineStatus } from '@/app/lib/actions';
-import { IconButton } from '@mui/material';
+import { IconButton, Badge } from '@mui/material';
 
 import ArchivOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import ArchiveIcon from '@mui/icons-material/Archive';
@@ -17,7 +17,7 @@ type ArchiveButtonProps = {
 };
 
 const ArchiveButton: FC<ArchiveButtonProps> = ({ status, routineId }) => {
-    const { execute, optimisticState } = useOptimisticAction(
+    const { execute, optimisticState, hasErrored } = useOptimisticAction(
         updateRoutineStatus,
         {
             currentState: status,
@@ -46,11 +46,13 @@ const ArchiveButton: FC<ArchiveButtonProps> = ({ status, routineId }) => {
                 );
             }}
         >
-            {optimisticState === RoutineStatus.ARCHIVED ? (
-                <ArchiveIcon />
-            ) : (
-                <ArchivOutlinedIcon />
-            )}
+            <Badge color="error" invisible={!hasErrored} variant="dot">
+                {optimisticState === RoutineStatus.ARCHIVED ? (
+                    <ArchiveIcon />
+                ) : (
+                    <ArchivOutlinedIcon />
+                )}
+            </Badge>
         </IconButton>
     );
 };
