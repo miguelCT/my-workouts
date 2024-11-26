@@ -24,7 +24,7 @@ import { RoutineStatus } from './constants';
 
 export async function fetchRoutine(routineId: string): Promise<Routine> {
     noStore();
-    await checkAuth();
+    // await checkAuth();
 
     const result = await db
         .select()

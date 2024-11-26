@@ -1,7 +1,24 @@
-import { createSafeActionClient } from 'next-safe-action';
+import {
+    createSafeActionClient,
+    DEFAULT_SERVER_ERROR_MESSAGE,
+} from 'next-safe-action';
 import { getServerAuthSession } from '@/server/auth';
+import * as Sentry from '@sentry/nextjs';
 
-const actionClient = createSafeActionClient({}).use(async ({ next }) => {
+class ActionError extends Error {}
+
+const actionClient = createSafeActionClient({
+    handleServerError(e) {
+        Sentry.captureException(e);
+        console.error('Action error:', e.message);
+
+        if (e instanceof ActionError) {
+            return e.message;
+        }
+
+        return DEFAULT_SERVER_ERROR_MESSAGE;
+    },
+}).use(async ({ next }) => {
     const session = await getServerAuthSession();
 
     if (!session) {
