@@ -32,12 +32,18 @@ export default async function AppBar() {
                     >
                         <HomeIcon />
                     </IconButton>
+                    <Box
+                        sx={{
+                            mr: 4,
+                        }}
+                    >
+                        <AppBackNavigation />
+                    </Box>
                     <Typography
                         variant="h6"
                         component="div"
                         sx={{ flexGrow: 1 }}
                     >
-                        <AppBackNavigation />
                         My workouts
                     </Typography>
                     <div>

@@ -12,7 +12,7 @@ export default function SignInButton() {
         >
             <Button
                 type="submit"
-                variant="contained"
+                variant="outlined"
                 color="inherit"
                 size="small"
             >
