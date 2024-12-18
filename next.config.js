@@ -9,7 +9,8 @@ await import('./src/env.js');
 /** @type {import("next").NextConfig} */
 const config = {
     experimental: {
-        typedRoutes: true,
+        // Not supported with Turbopack
+        // typedRoutes: true,
     },
 
     async redirects() {

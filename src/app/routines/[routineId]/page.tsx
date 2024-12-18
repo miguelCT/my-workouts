@@ -7,13 +7,12 @@ export const metadata: Metadata = {
     title: 'Routines',
 };
 
-export default async function Page({
-    params,
-}: {
-    params: {
+export default async function Page(props: {
+    params: Promise<{
         routineId: string;
-    };
+    }>;
 }) {
+    const params = await props.params;
     const routineId = params?.routineId;
 
     return (
