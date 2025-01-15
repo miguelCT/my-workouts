@@ -3,7 +3,7 @@ import { getServerAuthSession } from '@/server/auth';
 import AccessDenied from './AccessDenied';
 
 const Auth: FC<PropsWithChildren> = async ({ children }) => {
-    const session = true || (await getServerAuthSession());
+    const session = await getServerAuthSession();
 
     return !session ? <AccessDenied /> : <>{children}</>;
 };

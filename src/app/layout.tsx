@@ -7,7 +7,6 @@ import '@fontsource/roboto/700.css';
 import { Container, CssBaseline, ThemeProvider } from '@mui/material';
 
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import { GeistSans } from 'geist/font/sans';
 import AppBar from './ui/navigation/AppBar';
 import Auth from './ui/auth/Auth';
 
@@ -24,7 +23,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className={GeistSans.className}>
+            <body>
                 <ThemeProvider theme={theme}>
                     <CssBaseline enableColorScheme />
 
