@@ -15,7 +15,7 @@ export type CreateRoutineEntryType = z.infer<typeof CreateRoutineEntrySchema>;
 
 export const createDayInRoutine = actionClient
     .schema(CreateRoutineEntrySchema, {
-        handleValidationErrorsShape: ve => ({
+        handleValidationErrorsShape: async ve => ({
             errors: flattenValidationErrors(ve).fieldErrors,
             message: 'Missing Fields. Failed to create Day.',
         }),
@@ -45,7 +45,7 @@ export type UpdateRoutineEntryType = z.infer<typeof UpdateRoutineSchema>;
 
 export const updateDayInRoutine = actionClient
     .schema(UpdateRoutineSchema, {
-        handleValidationErrorsShape: ve => ({
+        handleValidationErrorsShape: async ve => ({
             errors: flattenValidationErrors(ve).fieldErrors,
             message: 'Missing Fields. Failed to Update Day.',
         }),

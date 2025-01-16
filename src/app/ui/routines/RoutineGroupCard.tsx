@@ -7,15 +7,15 @@ import {
 } from '@/app/lib/actions';
 import { type ExerciseEntry, type Routine } from '@/app/lib/definitions';
 import {
-    Alert,
     Box,
     Button,
     Card,
     CardActions,
     CardContent,
+    CardHeader,
+    Divider,
     IconButton,
     LinearProgress,
-    Typography,
 } from '@mui/material';
 import { useParams, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -27,8 +27,8 @@ import {
 } from '@/app/lib/formSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import EditIcon from '@mui/icons-material/Edit';
-import ExerciseEntryCard from './ExerciseEntryCard';
 import SubmissionErrorAlert from '../SumissionErrorAlert';
+import ExerciseEntryCard from './ExerciseEntryCard';
 
 function filterEntriesByDate(
     entries: ExerciseEntry[],
@@ -125,53 +125,87 @@ export default function RoutineGroupCard({
                                 : 'linear-gradient(145deg, rgba(255,217,235,1) 0%, rgba(223,236,255,1) 68%)',
                         }}
                     >
+                        {!empty && (
+                            <CardHeader
+                                title={`Week ${index} `}
+                                sx={{ pb: 1, backgroundColor: '#ffb8f04f' }}
+                                subheader={` Created at: ${date} `}
+                                subheaderTypographyProps={{
+                                    variant: 'caption',
+                                }}
+                                action={
+                                    !isEditionEnabled && (
+                                        <>
+                                            {empty ? (
+                                                <Button
+                                                    onClick={() =>
+                                                        setIsEditionEnabled(
+                                                            true,
+                                                        )
+                                                    }
+                                                >
+                                                    Start day
+                                                </Button>
+                                            ) : (
+                                                <IconButton
+                                                    color="primary"
+                                                    onClick={() =>
+                                                        setIsEditionEnabled(
+                                                            true,
+                                                        )
+                                                    }
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                            )}
+                                        </>
+                                    )
+                                }
+                            />
+                        )}
+                        <Divider />
                         <CardContent>
-                            {!empty && (
-                                <>
-                                    <Typography
-                                        variant="subtitle1"
-                                        color={'secondary'}
-                                    >
-                                        {`Week ${index}`}{' '}
-                                    </Typography>
-                                    <Typography variant="caption">
-                                        Created at: {date}{' '}
-                                    </Typography>
-                                </>
-                            )}
-
-                            {formValues.exercises.map(
-                                (exercise, exerciseIndex) => (
-                                    <Box
-                                        key={exercise.template.id}
-                                        sx={{ '&+&': { mt: 2 } }}
-                                    >
-                                        <ExerciseEntryCard
-                                            exerciseIndex={exerciseIndex}
-                                            entries={
-                                                empty
-                                                    ? [
-                                                          ...Array(
-                                                              exercise.template
-                                                                  .series_min,
-                                                          ).keys(),
-                                                      ].map(() => ({
-                                                          id: '',
-                                                          createdAt: '',
-                                                          weight: null,
-                                                          repetitions: null,
-                                                      }))
-                                                    : filterEntriesByDate(
-                                                          exercise.entries,
-                                                          date,
-                                                      )
-                                            }
-                                            template={exercise.template}
-                                            readOnly={!isEditionEnabled}
-                                        />
-                                    </Box>
-                                ),
-                            )}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 2,
+                                }}
+                            >
+                                {formValues.exercises.map(
+                                    (exercise, exerciseIndex) => (
+                                        <div key={exercise.template.id}>
+                                            <ExerciseEntryCard
+                                                exerciseIndex={exerciseIndex}
+                                                entries={
+                                                    empty
+                                                        ? [
+                                                              ...Array(
+                                                                  exercise
+                                                                      .template
+                                                                      .series_min,
+                                                              ).keys(),
+                                                          ].map(() => ({
+                                                              id: '',
+                                                              createdAt: '',
+                                                              weight: null,
+                                                              repetitions: null,
+                                                          }))
+                                                        : filterEntriesByDate(
+                                                              exercise.entries,
+                                                              date,
+                                                          )
+                                                }
+                                                template={exercise.template}
+                                                readOnly={!isEditionEnabled}
+                                            />
+                                            {exerciseIndex <
+                                                formValues.exercises.length -
+                                                    1 && <Divider />}
+                                        </div>
+                                    ),
+                                )}
+                            </Box>
                         </CardContent>
                         {formState.isSubmitting && <LinearProgress />}
                         <SubmissionErrorAlert
@@ -186,28 +220,7 @@ export default function RoutineGroupCard({
                                 justifyContent: 'flex-end',
                             }}
                         >
-                            {!isEditionEnabled ? (
-                                <>
-                                    {empty ? (
-                                        <Button
-                                            onClick={() =>
-                                                setIsEditionEnabled(true)
-                                            }
-                                        >
-                                            Start day
-                                        </Button>
-                                    ) : (
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() =>
-                                                setIsEditionEnabled(true)
-                                            }
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
-                                    )}
-                                </>
-                            ) : (
+                            {isEditionEnabled && (
                                 <>
                                     <Button
                                         onClick={() =>
